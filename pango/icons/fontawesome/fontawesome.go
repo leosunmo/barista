@@ -73,7 +73,7 @@ func Load(repoPath string) error {
 		for _, style := range meta.Styles {
 			p, ok := styles[style]
 			if !ok {
-				return fmt.Errorf("Unknown FontAwesome style: '%s'", style)
+				return fmt.Errorf("unknown FontAwesome style: '%s'", style)
 			}
 			err = p.Hex(name, meta.Code)
 			if err != nil {
