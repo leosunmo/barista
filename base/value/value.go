@@ -19,8 +19,8 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/soumya92/barista/base/notifier"
-	l "github.com/soumya92/barista/logging"
+	"github.com/leosunmo/barista/base/notifier"
+	l "github.com/leosunmo/barista/logging"
 )
 
 // To allow storing different concrete types in the atomic.Value, for example

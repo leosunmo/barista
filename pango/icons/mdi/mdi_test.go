@@ -17,10 +17,10 @@ package mdi
 import (
 	"testing"
 
-	"github.com/soumya92/barista/pango"
-	"github.com/soumya92/barista/testing/cron"
-	"github.com/soumya92/barista/testing/githubfs"
-	pangoTesting "github.com/soumya92/barista/testing/pango"
+	"github.com/leosunmo/barista/pango"
+	"github.com/leosunmo/barista/testing/cron"
+	"github.com/leosunmo/barista/testing/githubfs"
+	pangoTesting "github.com/leosunmo/barista/testing/pango"
 
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/require"

@@ -20,12 +20,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/soumya92/barista/bar"
-	"github.com/soumya92/barista/base/value"
-	"github.com/soumya92/barista/format"
-	"github.com/soumya92/barista/outputs"
-	testBar "github.com/soumya92/barista/testing/bar"
-	"github.com/soumya92/barista/timing"
+	"github.com/leosunmo/barista/bar"
+	"github.com/leosunmo/barista/base/value"
+	"github.com/leosunmo/barista/format"
+	"github.com/leosunmo/barista/outputs"
+	testBar "github.com/leosunmo/barista/testing/bar"
+	"github.com/leosunmo/barista/timing"
 
 	"github.com/stretchr/testify/require"
 	"golang.org/x/sys/unix"

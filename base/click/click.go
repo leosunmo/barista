@@ -18,7 +18,7 @@ package click
 import (
 	"os/exec"
 
-	"github.com/soumya92/barista/bar"
+	"github.com/leosunmo/barista/bar"
 )
 
 // DiscardEvent wraps a function with no arguments in a function that takes a

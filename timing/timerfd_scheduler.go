@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build linux
 // +build linux
 
 package timing
@@ -24,8 +25,8 @@ import (
 
 	"golang.org/x/sys/unix"
 
-	l "github.com/soumya92/barista/logging"
-	"github.com/soumya92/barista/timing/internal/timerfd"
+	l "github.com/leosunmo/barista/logging"
+	"github.com/leosunmo/barista/timing/internal/timerfd"
 )
 
 var _ schedulerImpl = &timerfdScheduler{}

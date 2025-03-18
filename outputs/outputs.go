@@ -18,9 +18,9 @@ package outputs
 import (
 	"fmt"
 
-	"github.com/soumya92/barista/bar"
-	"github.com/soumya92/barista/format"
-	"github.com/soumya92/barista/pango"
+	"github.com/leosunmo/barista/bar"
+	"github.com/leosunmo/barista/format"
+	"github.com/leosunmo/barista/pango"
 )
 
 // Errorf constructs a bar output that indicates an error,
@@ -39,7 +39,7 @@ func Textf(format string, args ...interface{}) *bar.Segment {
 	return Text(fmt.Sprintf(format, args...))
 }
 
-//Text constructs a simple text output from the given string.
+// Text constructs a simple text output from the given string.
 func Text(text string) *bar.Segment {
 	return bar.TextSegment(text)
 }

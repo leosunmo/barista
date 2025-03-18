@@ -19,15 +19,19 @@ This makes it simple to update a module at a fixed interval or
 at a fixed point in time.
 
 Typically, modules will make a scheduler:
-    mod.sch = timing.NewScheduler()
+
+	mod.sch = timing.NewScheduler()
+
 and use the scheduling calls to control the update timing:
-    mod.sch.Every(time.Second)
+
+	mod.sch.Every(time.Second)
 
 The Stream() goroutine will then loop over the ticker, and update
 the module with fresh information:
-    for range mod.sch.C {
-	  // update code.
-    }
+
+	    for range mod.sch.C {
+		  // update code.
+	    }
 
 This will automatically suspend processing when the bar is hidden.
 
@@ -39,7 +43,7 @@ package timing
 import (
 	"time"
 
-	"github.com/soumya92/barista/base/watchers/localtz"
+	"github.com/leosunmo/barista/base/watchers/localtz"
 )
 
 // Now returns the current time, in the machine's local time zone.

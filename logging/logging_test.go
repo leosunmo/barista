@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build baristadebuglog
 // +build baristadebuglog
 
 package logging
@@ -23,7 +24,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/soumya92/barista/testing/mockio"
+	"github.com/leosunmo/barista/testing/mockio"
 
 	"github.com/stretchr/testify/require"
 )
@@ -60,14 +61,14 @@ func TestShorten(t *testing.T) {
 		fullpath string
 		expected string
 	}{
-		{"github.com/soumya92/barista.Run", "barista:Run"},
-		{"github.com/soumya92/barista.(*i3Bar).AddModule",
+		{"github.com/leosunmo/barista.Run", "barista:Run"},
+		{"github.com/leosunmo/barista.(*i3Bar).AddModule",
 			"barista:i3Bar.AddModule"},
-		{"github.com/soumya92/barista/modules/weather/darksky.(*Provider).GetWeather",
+		{"github.com/leosunmo/barista/modules/weather/darksky.(*Provider).GetWeather",
 			"mod:weather/darksky.Provider.GetWeather"},
-		{"github.com/soumya92/barista/modules/clock", "mod:clock"},
-		{"github.com/soumya92/barista/core.Module", "core:Module"},
-		{"github.com/soumya92/barista/value.(Value).Set", "bar:value.Value.Set"},
+		{"github.com/leosunmo/barista/modules/clock", "mod:clock"},
+		{"github.com/leosunmo/barista/core.Module", "core:Module"},
+		{"github.com/leosunmo/barista/value.(Value).Set", "bar:value.Value.Set"},
 		{"github.com/golang/go/pkg.Type.Method",
 			"github.com/golang/go/pkg.Type.Method"},
 		{"builtin.Type.Method", "builtin.Type.Method"},

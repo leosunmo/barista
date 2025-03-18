@@ -21,9 +21,9 @@ package slot
 import (
 	"sync"
 
-	"github.com/soumya92/barista/bar"
-	"github.com/soumya92/barista/base/value"
-	"github.com/soumya92/barista/sink"
+	"github.com/leosunmo/barista/bar"
+	"github.com/leosunmo/barista/base/value"
+	"github.com/leosunmo/barista/sink"
 )
 
 // Slotter provides the ability to display the output of a module into named

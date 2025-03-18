@@ -17,10 +17,10 @@ package vpn
 import (
 	"testing"
 
-	"github.com/soumya92/barista/bar"
-	"github.com/soumya92/barista/base/watchers/netlink"
-	"github.com/soumya92/barista/outputs"
-	testBar "github.com/soumya92/barista/testing/bar"
+	"github.com/leosunmo/barista/bar"
+	"github.com/leosunmo/barista/base/watchers/netlink"
+	"github.com/leosunmo/barista/outputs"
+	testBar "github.com/leosunmo/barista/testing/bar"
 )
 
 func TestVpn(t *testing.T) {

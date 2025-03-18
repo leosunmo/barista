@@ -26,11 +26,11 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/soumya92/barista/bar"
-	"github.com/soumya92/barista/core"
-	l "github.com/soumya92/barista/logging"
-	"github.com/soumya92/barista/oauth"
-	"github.com/soumya92/barista/timing"
+	"github.com/leosunmo/barista/bar"
+	"github.com/leosunmo/barista/core"
+	l "github.com/leosunmo/barista/logging"
+	"github.com/leosunmo/barista/oauth"
+	"github.com/leosunmo/barista/timing"
 
 	"github.com/lucasb-eyer/go-colorful"
 	"golang.org/x/sys/unix"

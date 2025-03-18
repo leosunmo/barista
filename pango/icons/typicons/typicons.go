@@ -25,7 +25,7 @@ import (
 	"encoding/json"
 	"path/filepath"
 
-	"github.com/soumya92/barista/pango/icons"
+	"github.com/leosunmo/barista/pango/icons"
 
 	"github.com/spf13/afero"
 )

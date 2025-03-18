@@ -16,7 +16,7 @@
 package output
 
 import (
-	"github.com/soumya92/barista/bar"
+	"github.com/leosunmo/barista/bar"
 
 	"github.com/stretchr/testify/require"
 )
@@ -163,8 +163,9 @@ func (a SegmentAssertions) LeftClick() {
 // Segment returns the actual segment to allow fine-grained assertions.
 // This is doubly useful because Assertions.At(i) returns SegmentAssertions,
 // allowing code like:
-//     urgent, _ := out.At(2).Segment().IsUrgent()
-//     require.True(t, urgent, "segment #3 is urgent")
+//
+//	urgent, _ := out.At(2).Segment().IsUrgent()
+//	require.True(t, urgent, "segment #3 is urgent")
 func (a SegmentAssertions) Segment() *bar.Segment {
 	return a.segment
 }

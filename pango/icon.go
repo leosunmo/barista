@@ -17,7 +17,7 @@ package pango
 import (
 	"strings"
 
-	l "github.com/soumya92/barista/logging"
+	l "github.com/leosunmo/barista/logging"
 )
 
 // IconProvider is an interface for providing pango Icons.

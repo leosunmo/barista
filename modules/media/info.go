@@ -19,7 +19,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/soumya92/barista/timing"
+	"github.com/leosunmo/barista/timing"
 
 	"github.com/godbus/dbus/v5"
 )

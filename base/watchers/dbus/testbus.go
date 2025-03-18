@@ -23,7 +23,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/soumya92/barista/logging"
+	"github.com/leosunmo/barista/logging"
 
 	"github.com/godbus/dbus/v5"
 )

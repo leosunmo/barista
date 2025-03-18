@@ -16,7 +16,7 @@
 
 package click
 
-import "github.com/soumya92/barista/bar"
+import "github.com/leosunmo/barista/bar"
 
 // Left creates a click handler that invokes the given function
 // when a ButtonLeft event is received.
