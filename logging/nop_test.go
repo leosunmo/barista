@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build !baristadebuglog
 // +build !baristadebuglog
 
 package logging
@@ -20,7 +21,7 @@ import (
 	"log"
 	"testing"
 
-	"github.com/soumya92/barista/testing/mockio"
+	"github.com/leosunmo/barista/testing/mockio"
 
 	"github.com/stretchr/testify/require"
 )

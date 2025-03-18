@@ -16,8 +16,8 @@
 package sink
 
 import (
-	"github.com/soumya92/barista/bar"
-	"github.com/soumya92/barista/base/value"
+	"github.com/leosunmo/barista/bar"
+	"github.com/leosunmo/barista/base/value"
 )
 
 // Func creates a bar.Sink that sends sends output in the form of Segments.

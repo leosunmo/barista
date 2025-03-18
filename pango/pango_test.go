@@ -19,11 +19,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/soumya92/barista/base/value"
-	"github.com/soumya92/barista/colors"
-	"github.com/soumya92/barista/format"
-	"github.com/soumya92/barista/testing/output"
-	"github.com/soumya92/barista/testing/pango"
+	"github.com/leosunmo/barista/base/value"
+	"github.com/leosunmo/barista/colors"
+	"github.com/leosunmo/barista/format"
+	"github.com/leosunmo/barista/testing/output"
+	"github.com/leosunmo/barista/testing/pango"
 
 	"github.com/stretchr/testify/require"
 )

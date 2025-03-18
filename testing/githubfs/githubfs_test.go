@@ -20,7 +20,7 @@ import (
 	"testing"
 	"time"
 
-	testServer "github.com/soumya92/barista/testing/httpserver"
+	testServer "github.com/leosunmo/barista/testing/httpserver"
 
 	"github.com/stretchr/testify/require"
 )

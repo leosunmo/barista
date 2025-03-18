@@ -18,8 +18,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/soumya92/barista/bar"
-	"github.com/soumya92/barista/timing"
+	"github.com/leosunmo/barista/bar"
+	"github.com/leosunmo/barista/timing"
 )
 
 // Repeat creates a TimedOutput from a function by repeatedly calling it at

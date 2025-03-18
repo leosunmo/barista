@@ -19,10 +19,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/soumya92/barista/bar"
-	"github.com/soumya92/barista/outputs"
-	testBar "github.com/soumya92/barista/testing/bar"
-	testModule "github.com/soumya92/barista/testing/module"
+	"github.com/leosunmo/barista/bar"
+	"github.com/leosunmo/barista/outputs"
+	testBar "github.com/leosunmo/barista/testing/bar"
+	testModule "github.com/leosunmo/barista/testing/module"
 
 	"github.com/stretchr/testify/require"
 )

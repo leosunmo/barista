@@ -18,10 +18,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/soumya92/barista/bar"
-	"github.com/soumya92/barista/outputs"
-	"github.com/soumya92/barista/sink"
-	"github.com/soumya92/barista/testing/fail"
+	"github.com/leosunmo/barista/bar"
+	"github.com/leosunmo/barista/outputs"
+	"github.com/leosunmo/barista/sink"
+	"github.com/leosunmo/barista/testing/fail"
 
 	"github.com/stretchr/testify/require"
 )

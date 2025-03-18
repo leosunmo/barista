@@ -16,11 +16,12 @@
 package funcs
 
 import (
-	"github.com/soumya92/barista/base/notifier"
-	"github.com/soumya92/barista/timing"
 	"time"
 
-	"github.com/soumya92/barista/bar"
+	"github.com/leosunmo/barista/base/notifier"
+	"github.com/leosunmo/barista/timing"
+
+	"github.com/leosunmo/barista/bar"
 )
 
 // Func receives a bar.Sink and uses it for output.

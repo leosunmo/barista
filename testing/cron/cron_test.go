@@ -20,7 +20,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/soumya92/barista/testing/fail"
+	"github.com/leosunmo/barista/testing/fail"
 
 	"github.com/stretchr/testify/require"
 )

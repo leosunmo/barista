@@ -22,11 +22,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/soumya92/barista/bar"
-	"github.com/soumya92/barista/base/value"
-	l "github.com/soumya92/barista/logging"
-	"github.com/soumya92/barista/outputs"
-	"github.com/soumya92/barista/timing"
+	"github.com/leosunmo/barista/bar"
+	"github.com/leosunmo/barista/base/value"
+	l "github.com/leosunmo/barista/logging"
+	"github.com/leosunmo/barista/outputs"
+	"github.com/leosunmo/barista/timing"
 )
 
 // LoadAvg represents the CPU load average for the past 1, 5, and 15 minutes.

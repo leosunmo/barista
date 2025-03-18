@@ -23,10 +23,10 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/soumya92/barista/bar"
-	"github.com/soumya92/barista/outputs"
-	testBar "github.com/soumya92/barista/testing/bar"
-	"github.com/soumya92/barista/testing/httpclient"
+	"github.com/leosunmo/barista/bar"
+	"github.com/leosunmo/barista/outputs"
+	testBar "github.com/leosunmo/barista/testing/bar"
+	"github.com/leosunmo/barista/testing/httpclient"
 	"github.com/stretchr/testify/require"
 )
 

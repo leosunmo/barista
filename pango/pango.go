@@ -18,18 +18,21 @@ Using nested Span and Text nodes, pango formatted output can be easily construct
 with compile-time validation of nesting and automatic escaping.
 
 For example, to construct pango markup for:
- <span color="#ff0000">Red <span weight="bold">Bold Text</span></span>
+
+	<span color="#ff0000">Red <span weight="bold">Bold Text</span></span>
 
 the go code would be:
- pango.New(
-   pango.Text("Red "),
-   pango.Text("Bold Text").Bold()).
- Color(colors.Hex("#ff0000"))
+
+	pango.New(
+	  pango.Text("Red "),
+	  pango.Text("Bold Text").Bold()).
+	Color(colors.Hex("#ff0000"))
 
 or:
- pango.Text("Red ").
-   Color(colors.Hex("#ff0000")).
-   Append(pango.Text("Bold Text").Bold())
+
+	pango.Text("Red ").
+	  Color(colors.Hex("#ff0000")).
+	  Append(pango.Text("Bold Text").Bold())
 */
 package pango
 
@@ -38,9 +41,9 @@ import (
 	"fmt"
 	"html"
 
-	"github.com/soumya92/barista/bar"
-	"github.com/soumya92/barista/base/value"
-	"github.com/soumya92/barista/format"
+	"github.com/leosunmo/barista/bar"
+	"github.com/leosunmo/barista/base/value"
+	"github.com/leosunmo/barista/format"
 )
 
 type nodeType int
@@ -112,9 +115,13 @@ func (n *Node) AppendTextf(format string, args ...interface{}) *Node {
 // current node, and returns a wrapping node for further operations.
 //
 // For example,
-//   Text("c").Condensed().Color(red).Concat(Text("foo")).UnderlineError()
+//
+//	Text("c").Condensed().Color(red).Concat(Text("foo")).UnderlineError()
+//
 // will create
-//   <span underline='error'><span stretch='condensed' color='#ff0000'>c</span>foo</span>
+//
+//	<span underline='error'><span stretch='condensed' color='#ff0000'>c</span>foo</span>
+//
 // where the appended "foo" is not condensed or red, and everything is underlined.
 func (n *Node) Concat(nodes ...*Node) *Node {
 	if n.nodeType != ntElement || n.content != "" {
@@ -194,7 +201,9 @@ func Text(s string) *Node {
 // Note that it will escape both the format string and arguments,
 // so you should use pango constructs to add formatting.
 // i.e.,
-//  Textf("<span color='%s'>%s</span>", "red", "text")
+//
+//	Textf("<span color='%s'>%s</span>", "red", "text")
+//
 // won't give you red text.
 func Textf(format string, args ...interface{}) *Node {
 	return Text(fmt.Sprintf(format, args...))

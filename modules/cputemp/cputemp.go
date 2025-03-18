@@ -16,7 +16,7 @@
 package cputemp
 
 import (
-	"github.com/soumya92/barista/modules/internal/temperature"
+	"github.com/leosunmo/barista/modules/internal/temperature"
 )
 
 // Module represents a cputemp bar module. It supports setting the output

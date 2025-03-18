@@ -25,8 +25,8 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/soumya92/barista/pango"
-	"github.com/soumya92/barista/pango/icons"
+	"github.com/leosunmo/barista/pango"
+	"github.com/leosunmo/barista/pango/icons"
 
 	"github.com/spf13/afero"
 	"gopkg.in/yaml.v2"

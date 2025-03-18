@@ -20,11 +20,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/soumya92/barista/bar"
-	"github.com/soumya92/barista/base/value"
-	"github.com/soumya92/barista/base/watchers/dbus"
-	l "github.com/soumya92/barista/logging"
-	"github.com/soumya92/barista/outputs"
+	"github.com/leosunmo/barista/bar"
+	"github.com/leosunmo/barista/base/value"
+	"github.com/leosunmo/barista/base/watchers/dbus"
+	l "github.com/leosunmo/barista/logging"
+	"github.com/leosunmo/barista/outputs"
 
 	"golang.org/x/time/rate"
 )

@@ -17,7 +17,7 @@ package pango
 import (
 	"testing"
 
-	"github.com/soumya92/barista/testing/pango"
+	"github.com/leosunmo/barista/testing/pango"
 
 	"github.com/stretchr/testify/require"
 )

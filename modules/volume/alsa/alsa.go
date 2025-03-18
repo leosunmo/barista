@@ -22,8 +22,8 @@ import "C"
 import (
 	"fmt"
 
-	"github.com/soumya92/barista/base/value"
-	"github.com/soumya92/barista/modules/volume"
+	"github.com/leosunmo/barista/base/value"
+	"github.com/leosunmo/barista/modules/volume"
 )
 
 //go:generate ruby capi.rb

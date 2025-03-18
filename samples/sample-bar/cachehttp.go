@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build !prod
 // +build !prod
 
 // When included in the main build process, this file PERMANENTLY caches all
@@ -24,8 +25,11 @@
 
 package main
 
-import "net/http"
-import "github.com/soumya92/barista/testing/httpcache"
+import (
+	"net/http"
+
+	"github.com/leosunmo/barista/testing/httpcache"
+)
 
 func init() {
 	http.DefaultTransport = httpcache.Wrap(http.DefaultTransport)
