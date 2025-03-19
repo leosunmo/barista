@@ -72,7 +72,7 @@ bad-icon:
 	), 0644)
 	err = Load("/src/fa-error-4")
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "Unknown FontAwesome style")
+	require.Contains(t, err.Error(), "unknown FontAwesome style")
 }
 
 func TestValid(t *testing.T) {
