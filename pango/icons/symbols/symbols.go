@@ -44,7 +44,7 @@ func LoadFile(filePath string) error {
 	defer f.Close()
 	symbol := icons.NewProvider("symbol")
 	symbol.Font("Material Symbols Outlined")
-	symbol.AddStyle(func(n *pango.Node) { n.Large().Rise(-3000) })
+	symbol.AddStyle(func(n *pango.Node) { n.Rise(-3000) })
 	s := bufio.NewScanner(f)
 	s.Split(bufio.ScanLines)
 	for s.Scan() {
