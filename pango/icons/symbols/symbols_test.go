@@ -30,7 +30,7 @@ func TestInvalid(t *testing.T) {
 	fs = afero.NewMemMapFs()
 	require.Error(t, Load("/src/no-such-directory"))
 
-	afero.WriteFile(fs, "/src/material-error-1/variablefont/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].codepoints", []byte(
+	err := afero.WriteFile(fs, "/src/material-error-1/variablefont/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].codepoints", []byte(
 		`-- Lines in weird formats --
 		 Empty:
 
@@ -40,26 +40,30 @@ func TestInvalid(t *testing.T) {
 		 Invalid codepoint:
 		 badIcon xy`,
 	), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	require.Error(t, Load("/src/material-error-1"))
 
-	afero.WriteFile(fs, "/src/material-error-2/iconfont/codepoint", nil, 0644)
+	err = afero.WriteFile(fs, "/src/material-error-2/iconfont/codepoint", nil, 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	require.Error(t, Load("/src/material-error-2"))
 
-	afero.WriteFile(fs, "/src/material-error-3/variablefont/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].codepoints", []byte(
+	err = afero.WriteFile(fs, "/src/material-error-3/variablefont/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].codepoints", []byte(
 		`someIcon 61
 		 otherIcon 62
 		 badIcon xy`,
 	), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	require.Error(t, Load("/src/material-error-3"))
 }
 
 func TestValid(t *testing.T) {
 	fs = afero.NewMemMapFs()
-	afero.WriteFile(fs, "/src/material/variablefont/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].codepoints", []byte(
+	err := afero.WriteFile(fs, "/src/material/variablefont/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].codepoints", []byte(
 		`someIcon 61
 		 otherIcon 62
 		 thirdIcon 63`,
 	), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	require.NoError(t, Load("/src/material"))
 	t.Logf("pango.Icon(\"symbol-someIcon\").String() = %v\n", pango.Icon("symbol-someIcon").String())
 	pangoTesting.AssertText(t, "a", pango.Icon("symbol-someIcon").String())
@@ -67,11 +71,12 @@ func TestValid(t *testing.T) {
 
 func TestValidFromFile(t *testing.T) {
 	fs = afero.NewMemMapFs()
-	afero.WriteFile(fs, "/src/material/variablefont/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].codepoints", []byte(
+	err := afero.WriteFile(fs, "/src/material/variablefont/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].codepoints", []byte(
 		`someIcon 61
 		 otherIcon 62
 		 thirdIcon 63`,
 	), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	require.NoError(t, LoadFile("/src/material/variablefont/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].codepoints"))
 	pangoTesting.AssertText(t, "a", pango.Icon("symbol-someIcon").String())
 }
