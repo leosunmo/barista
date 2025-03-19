@@ -72,7 +72,8 @@ func TestReformat(t *testing.T) {
 	slotter.Activate("A")
 	testBar.LatestOutput(1, 5).AssertText([]string{"<", "-", "-", ">"})
 
-	// TODO(leo): this last assertion is flaky.
+	// TODO(leo): this last assertion is flaky. Appears similar tos the one at
+	// modules/media/media_test.go:TestAutoMedia
 	original.OutputText("baz")
 	testBar.NextOutput().AssertText([]string{"<", "baz", "-", "-", ">"})
 }
