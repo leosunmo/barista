@@ -267,7 +267,7 @@ func (m metar) getCondition() weather.Condition {
 
 	// Find all of the weather conditions present in the METAR.
 	hasCondition := map[weather.Condition]bool{}
-	for _, wx := range precipPattern.FindAllStringSubmatch(m.WxString, 0) {
+	for _, wx := range precipPattern.FindAllStringSubmatch(m.WxString, -1) {
 		precip := wx[3]
 		hasCondition[precipMapping[precip]] = true
 	}
