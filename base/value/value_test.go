@@ -154,7 +154,7 @@ func TestErrorValue(t *testing.T) {
 	require.Error(err)
 
 	v.Set("...")
-	val, err = v.Get()
+	_, err = v.Get()
 	require.NoError(err, "Setting value clears error")
 
 	require.False(v.Error(nil), "Error returns false for nil error")
