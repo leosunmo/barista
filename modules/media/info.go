@@ -191,8 +191,8 @@ func (i *Info) updateMetadata(metadata map[string]dbus.Variant) {
 // Some mpris players report numeric values as the wrong type. Fix that.
 // TODO: See if this is a solved problem.
 
-func getLong(l interface{}) int64 {
-	switch l.(type) {
+func getLong(l any) int64 {
+	switch l := l.(type) {
 	case int, int8, int16, int32, int64:
 		return reflect.ValueOf(l).Int()
 	case uint, uint8, uint16, uint32, uint64:
@@ -200,14 +200,14 @@ func getLong(l interface{}) int64 {
 	case float32, float64:
 		return int64(reflect.ValueOf(l).Float())
 	case dbus.Variant:
-		return getLong(l.(dbus.Variant).Value())
+		return getLong(l.Value())
 	default:
 		return 0
 	}
 }
 
-func getDouble(d interface{}) float64 {
-	switch d.(type) {
+func getDouble(d any) float64 {
+	switch d := d.(type) {
 	case int, int8, int16, int32, int64:
 		return float64(reflect.ValueOf(d).Int())
 	case uint, uint8, uint16, uint32, uint64:
@@ -215,7 +215,7 @@ func getDouble(d interface{}) float64 {
 	case float32, float64:
 		return reflect.ValueOf(d).Float()
 	case dbus.Variant:
-		return getDouble(d.(dbus.Variant).Value())
+		return getDouble(d.Value())
 	default:
 		return 0.0
 	}

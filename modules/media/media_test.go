@@ -250,6 +250,7 @@ func TestAutoMedia(t *testing.T) {
 	}, dbusWatcher.SignalTypeNone)
 	srvB.AddName("org.mpris.MediaPlayer2.B")
 
+	// TODO(leo): This is a bit flaky.
 	testBar.NextOutput("on new player").AssertText([]string{"TitleB"})
 
 	objA.SetProperties(map[string]interface{}{"PlaybackStatus": "Stopped"},
