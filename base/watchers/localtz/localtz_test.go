@@ -35,12 +35,6 @@ func newTempFile() string {
 	return path.Join(dir, "localtime")
 }
 
-// Must run before localtz.go init(), so use IIFE instead.
-var ignored = func() int {
-	tzFile = ""
-	return 0
-}()
-
 func TestTimezoneChanges(t *testing.T) {
 	require := require.New(t)
 	atomic.StoreUint32(&testMode, 0)
