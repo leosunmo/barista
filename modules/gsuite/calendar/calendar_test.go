@@ -275,9 +275,7 @@ func TestMain(m *testing.M) {
 			Reminders []reminder `json:"defaultReminders"`
 			Items     []event    `json:"items"`
 		}
-		for _, e := range calEvents {
-			evts.Items = append(evts.Items, e)
-		}
+		evts.Items = append(evts.Items, calEvents...)
 		evts.Reminders = append(evts.Reminders,
 			reminder{"email", 60},
 			reminder{"popup", 1},
