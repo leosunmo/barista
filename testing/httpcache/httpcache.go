@@ -70,8 +70,13 @@ type roundTripper struct {
 }
 
 func (c roundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	path := filepath.Join(c.cacheDir, keyForURL(req.URL))
-	if file, err := os.Open(path); err == nil {
+	key := keyForURL(req.URL)
+	path := filepath.Join(c.cacheDir, key)
+	absPath, err := filepath.Abs(path)
+	if err != nil || !strings.HasPrefix(absPath, c.cacheDir) {
+		return nil, fmt.Errorf("invalid cache path: %s", path)
+	}
+	if file, err := os.Open(absPath); err == nil {
 		return http.ReadResponse(bufio.NewReader(file), req)
 	}
 	resp, err := c.RoundTripper.RoundTrip(req)
@@ -80,7 +85,7 @@ func (c roundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 	body, err := httputil.DumpResponse(resp, true)
 	if err == nil {
-		err = os.WriteFile(path, body, 0600)
+		err = os.WriteFile(absPath, body, 0600)
 	}
 	return resp, err
 }
