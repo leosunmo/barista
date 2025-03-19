@@ -37,7 +37,6 @@ type NameOwnerWatcher struct {
 
 	conn   dbusConn
 	dbusCh chan *dbus.Signal
-	match  dbus.MatchOption
 
 	owners   map[string]string
 	ownersMu sync.RWMutex
