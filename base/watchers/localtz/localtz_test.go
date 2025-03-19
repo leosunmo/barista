@@ -35,6 +35,7 @@ func newTempFile() string {
 }
 
 func TestTimezoneChanges(t *testing.T) {
+	// TODO(leo): This test is flaky.
 	require := require.New(t)
 	atomic.StoreUint32(&testMode, 0)
 	tzFile = newTempFile()
