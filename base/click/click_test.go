@@ -15,7 +15,6 @@
 package click
 
 import (
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"path"
@@ -112,7 +111,7 @@ func TestButton(t *testing.T) {
 }
 
 func TestRunLeft(t *testing.T) {
-	dir, err := ioutil.TempDir("", "scratch")
+	dir, err := os.MkdirTemp("", "scratch")
 	if err != nil {
 		t.Fatalf("failed to create test directory: %s", err)
 	}

@@ -16,6 +16,7 @@
 package gmail
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -27,6 +28,7 @@ import (
 
 	"golang.org/x/oauth2/google"
 	gmail "google.golang.org/api/gmail/v1"
+	"google.golang.org/api/option"
 )
 
 // Info represents the unread and total thread counts for labels.
@@ -98,7 +100,7 @@ func (m *Module) Stream(sink bar.Sink) {
 	if wrapForTest != nil {
 		wrapForTest(client)
 	}
-	srv, _ := gmail.New(client)
+	srv, _ := gmail.NewService(context.Background(), option.WithHTTPClient(client))
 	r, err := srv.Users.Labels.List("me").Do()
 	if sink.Error(err) {
 		return

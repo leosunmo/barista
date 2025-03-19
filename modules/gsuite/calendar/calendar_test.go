@@ -286,7 +286,7 @@ func TestMain(m *testing.M) {
 		)
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(evts)
+		_ = json.NewEncoder(w).Encode(evts)
 	})
 	server := httptest.NewServer(mux)
 	defer server.Close()

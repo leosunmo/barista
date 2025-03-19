@@ -166,7 +166,8 @@ func TestOauthSetup(t *testing.T) {
 - Visit #authURL# and enter the code here:
 >`, sanitiseOauthOutput(out))
 
-	mockStdout.ReadUntil(' ', time.Second)
+	_, err := mockStdout.ReadUntil(' ', time.Second)
+	require.NoError(err, "mockStdout.ReadUntil failed")
 	mockStdin.Write([]byte("authcode\n"))
 	assertExitCode(t, exitCode, 0)
 	require.Equal(
@@ -415,7 +416,8 @@ func TestOauthInvalidSavedToken(t *testing.T) {
 - Visit #authURL# and enter the code here:
 >`, sanitiseOauthOutput(out))
 
-	mockStdout.ReadUntil(' ', time.Second)
+	_, err := mockStdout.ReadUntil(' ', time.Second)
+	require.NoError(err, "mockStdout.ReadUntil failed")
 	mockStdin.Write([]byte("authcode\n"))
 	assertExitCode(t, exitCode, 0)
 	require.Equal(
@@ -439,8 +441,10 @@ func TestOauthSetupStdinError(t *testing.T) {
 	os.Args = []string{"arg0", "setup-oauth"}
 	mockStdin.ShouldError(errors.New("stdin error"))
 	go InteractiveSetup()
-	mockStdout.ReadUntil('>', time.Second)
-	mockStdout.ReadUntil(' ', time.Second)
+	_, err := mockStdout.ReadUntil('>', time.Second)
+	require.NoError(err, "mockStdout.ReadUntil failed")
+	_, err = mockStdout.ReadUntil(' ', time.Second)
+	require.NoError(err, "mockStdout.ReadUntil failed")
 
 	assertExitCode(t, exitCode, 1)
 	out := mockStdout.ReadNow()
@@ -462,8 +466,10 @@ func TestOauthSetupEndpointError(t *testing.T) {
 	})
 
 	go InteractiveSetup()
-	mockStdout.ReadUntil('>', time.Second)
-	mockStdout.ReadUntil(' ', time.Second)
+	_, err := mockStdout.ReadUntil('>', time.Second)
+	require.NoError(err, "mockStdout.ReadUntil failed")
+	_, err = mockStdout.ReadUntil(' ', time.Second)
+	require.NoError(err, "mockStdout.ReadUntil failed")
 	mockStdin.Write([]byte("authcode\n"))
 	assertExitCode(t, exitCode, 1)
 	require.Regexp(`! Failed to update token: .*`, mockStdout.ReadNow())
@@ -481,8 +487,10 @@ func TestOauthSetupInvalidCode(t *testing.T) {
 	})
 
 	go InteractiveSetup()
-	mockStdout.ReadUntil('>', time.Second)
-	mockStdout.ReadUntil(' ', time.Second)
+	_, err := mockStdout.ReadUntil('>', time.Second)
+	require.NoError(err, "mockStdout.ReadUntil failed")
+	_, err = mockStdout.ReadUntil(' ', time.Second)
+	require.NoError(err, "mockStdout.ReadUntil failed")
 	mockStdin.Write([]byte("not-authcode\n"))
 	assertExitCode(t, exitCode, 1)
 	require.Regexp(`! Failed to update token: .*`, mockStdout.ReadNow())
@@ -501,8 +509,10 @@ func TestOauthSetupRandError(t *testing.T) {
 	})
 
 	go InteractiveSetup()
-	mockStdout.ReadUntil('>', time.Second)
-	mockStdout.ReadUntil(' ', time.Second)
+	_, err := mockStdout.ReadUntil('>', time.Second)
+	require.NoError(err, "mockStdout.ReadUntil failed")
+	_, err = mockStdout.ReadUntil(' ', time.Second)
+	require.NoError(err, "mockStdout.ReadUntil failed")
 	mockStdin.Write([]byte("authcode\n"))
 	assertExitCode(t, exitCode, 1)
 	require.Regexp(`! Failed to update token: .*`, mockStdout.ReadNow())

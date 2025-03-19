@@ -15,7 +15,7 @@
 package httpserver
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -41,7 +41,7 @@ func get(t *testing.T, url string) (*http.Response, string) {
 		return r, ""
 	}
 	defer r.Body.Close()
-	body, e := ioutil.ReadAll(r.Body)
+	body, e := io.ReadAll(r.Body)
 	if e != nil {
 		require.Fail(t, "Got error while reading response of %s: %s",
 			url, e.Error())
@@ -96,17 +96,20 @@ func TestStatic(t *testing.T) {
 	fs = afero.NewMemMapFs()
 	require := require.New(t)
 
-	afero.WriteFile(fs, "testdata/foo", []byte(`bar`), 0400)
+	err := afero.WriteFile(fs, "testdata/foo", []byte(`bar`), 0400)
+	require.NoError(err, "afero.WriteFile failed")
 	testOne(t, "/static/foo", 200, "bar")
 
-	afero.WriteFile(fs, "testdata/empty", []byte{}, 0400)
+	err = afero.WriteFile(fs, "testdata/empty", []byte{}, 0400)
+	require.NoError(err, "afero.WriteFile failed")
 	r, body := get(t, "/static/empty")
 	require.Equal(200, r.StatusCode)
 	require.Empty(body)
 
 	testOne(t, "/static/not-found", 404)
 
-	afero.WriteFile(fs, "testdata/no-read", []byte{}, 0)
+	err = afero.WriteFile(fs, "testdata/no-read", []byte{}, 0)
+	require.NoError(err, "afero.WriteFile failed")
 	// https://github.com/spf13/afero/issues/150
 	// testOne(t, "/static/no-read", 500)
 }
@@ -114,18 +117,20 @@ func TestStatic(t *testing.T) {
 func TestTemplate(t *testing.T) {
 	fs = afero.NewMemMapFs()
 
-	afero.WriteFile(fs, "testdata/foo.tpl",
+	err := afero.WriteFile(fs, "testdata/foo.tpl",
 		[]byte(`Param1 = {{.param1}}, Param2 = {{.param2}}`), 0400)
-
+	require.NoError(t, err, "afero.WriteFile failed")
 	testOne(t, "/tpl/foo?param1=abc&param2=xyz", 200, `Param1 = abc, Param2 = xyz`)
 	testOne(t, "/tpl/foo", 200, `Param1 = , Param2 = `)
 
-	afero.WriteFile(fs, "testdata/cannot-read.tpl", []byte(`anything`), 0)
+	err = afero.WriteFile(fs, "testdata/cannot-read.tpl", []byte(`anything`), 0)
+	require.NoError(t, err, "afero.WriteFile failed")
 	// https://github.com/spf13/afero/issues/150
 	// testOne(t, "/tpl/cannot-read?", 500)
 
 	testOne(t, "/tpl/no-such-template", 404)
 
-	afero.WriteFile(fs, "testdata/bad.tpl", []byte(`Param = {{.param`), 0400)
+	err = afero.WriteFile(fs, "testdata/bad.tpl", []byte(`Param = {{.param`), 0400)
+	require.NoError(t, err, "afero.WriteFile failed")
 	testOne(t, "/tpl/bad", 500)
 }

@@ -31,7 +31,8 @@ import (
 
 type battery map[string]interface{}
 
-func write(battery battery) {
+func write(t *testing.T, battery battery) {
+	t.Helper()
 	var buffer bytes.Buffer
 	for key, value := range battery {
 		buffer.WriteString("POWER_SUPPLY_")
@@ -43,14 +44,19 @@ func write(battery battery) {
 	batteryFile := fmt.Sprintf(
 		"/sys/class/power_supply/%s/uevent",
 		battery["NAME"].(string))
-	afero.WriteFile(fs, batteryFile, buffer.Bytes(), 0644)
+	err := afero.WriteFile(fs, batteryFile, buffer.Bytes(), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
+
 	batteryTypeFile := fmt.Sprintf(
 		"/sys/class/power_supply/%s/type",
 		battery["NAME"].(string))
 	if strings.HasPrefix(battery["NAME"].(string), "BAT") {
-		afero.WriteFile(fs, batteryTypeFile, []byte("Battery\n"), 0644)
+		err = afero.WriteFile(fs, batteryTypeFile, []byte("Battery\n"), 0644)
+		require.NoError(t, err, "afero.WriteFile failed")
 	} else {
-		afero.WriteFile(fs, batteryTypeFile, []byte("Mains\n"), 0644)
+		err = afero.WriteFile(fs, batteryTypeFile, []byte("Mains\n"), 0644)
+		require.NoError(t, err, "afero.WriteFile failed")
+
 	}
 }
 
@@ -80,14 +86,14 @@ func TestUnknownAndMissingStatus(t *testing.T) {
 	require.Equal(Disconnected, info.Status)
 
 	// Unknown status.
-	write(battery{"NAME": "BAT1"})
+	write(t, battery{"NAME": "BAT1"})
 	info = batteryInfo("BAT1")
 	require.Equal(Unknown, info.Status)
 
 	info = allBatteriesInfo()
 	require.Equal(Unknown, info.Status)
 
-	write(battery{
+	write(t, battery{
 		"NAME":   "BAT2",
 		"STATUS": "OtherStatus",
 	})
@@ -104,7 +110,7 @@ func TestGarbageFiles(t *testing.T) {
 	require := require.New(t)
 	fs = afero.NewMemMapFs()
 
-	afero.WriteFile(fs, "/sys/class/power_supply/BAT0/uevent",
+	err := afero.WriteFile(fs, "/sys/class/power_supply/BAT0/uevent",
 		[]byte(`
 POWER_SUPPLY_NAME=BAT0
 POWER_SUPPLY_STATUS=Disconnected
@@ -119,6 +125,7 @@ POWER_SUPPLY_TECHNOLOGY=malformed=line
 And an empty line follows
 
 `), 0644)
+	require.NoError(err, "afero.WriteFile failed")
 	info := batteryInfo("BAT0")
 
 	require.Equal(Disconnected, info.Status)
@@ -132,7 +139,9 @@ And an empty line follows
 	require.Equal("NiCd", info.Technology)
 
 	fs = afero.NewMemMapFs()
-	afero.WriteFile(fs, "/sys/class/power_supply", []byte(`foobar`), 0644)
+	err = afero.WriteFile(fs, "/sys/class/power_supply", []byte(`foobar`), 0644)
+	require.NoError(err, "afero.WriteFile failed")
+
 	info = allBatteriesInfo()
 	require.Equal(Unknown, info.Status)
 }
@@ -142,7 +151,7 @@ var micros = 1000 * 1000
 func TestSimple(t *testing.T) {
 	require := require.New(t)
 	fs = afero.NewMemMapFs()
-	write(battery{
+	write(t, battery{
 		"NAME":               "BAT0",
 		"STATUS":             "Charging",
 		"PRESENT":            1,
@@ -155,7 +164,7 @@ func TestSimple(t *testing.T) {
 		"CAPACITY":           50,
 	})
 
-	write(battery{
+	write(t, battery{
 		"NAME":               "BAT1",
 		"STATUS":             "Full",
 		"PRESENT":            1,
@@ -167,7 +176,7 @@ func TestSimple(t *testing.T) {
 		"CAPACITY":           100,
 	})
 
-	write(battery{
+	write(t, battery{
 		"NAME":               "BAT2",
 		"STATUS":             "Discharging",
 		"PRESENT":            1,
@@ -181,7 +190,7 @@ func TestSimple(t *testing.T) {
 	})
 
 	// (Pinebook Pro) example without CHARGE_NOW
-	write(battery{
+	write(t, battery{
 		"NAME":               "BAT3",
 		"STATUS":             "Discharging",
 		"PRESENT":            1,
@@ -242,7 +251,7 @@ func TestSimple(t *testing.T) {
 		outputs.Text("NiCd").Urgent(false),
 	), "on start")
 
-	write(battery{
+	write(t, battery{
 		"NAME":               "BAT2",
 		"STATUS":             "Discharging",
 		"PRESENT":            1,
@@ -315,11 +324,11 @@ func TestCombined(t *testing.T) {
 		"ONLINE": 0,
 	}
 
-	write(ac)
+	write(t, ac)
 	info := allBatteriesInfo()
 	require.Equal(Disconnected, info.Status)
 
-	writeAll := func() { write(bat0); write(bat1); write(bat2); write(ac) }
+	writeAll := func() { write(t, bat0); write(t, bat1); write(t, bat2); write(t, ac) }
 	writeAll()
 
 	testBar.New(t)

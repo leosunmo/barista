@@ -31,19 +31,22 @@ func TestInvalid(t *testing.T) {
 	var err error
 	require.Error(t, Load("/src/no-such-directory"))
 
-	afero.WriteFile(fs, "/src/fa-error-1/metadata/icons.yml", []byte(
+	err = afero.WriteFile(fs, "/src/fa-error-1/metadata/icons.yml", []byte(
 		`-- Invalid YAML --`,
 	), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	err = Load("/src/fa-error-1")
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "cannot unmarshal")
 
-	afero.WriteFile(fs, "/src/fa-error-2/metadata/icons.yml", nil, 0644)
+	err = afero.WriteFile(fs, "/src/fa-error-2/metadata/icons.yml", nil, 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
+
 	err = Load("/src/fa-error-2")
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "EOF")
 
-	afero.WriteFile(fs, "/src/fa-error-3/metadata/icons.yml", []byte(
+	err = afero.WriteFile(fs, "/src/fa-error-3/metadata/icons.yml", []byte(
 		`some-icon:
   changes:
     - '4.4'
@@ -58,11 +61,12 @@ bad-icon:
   unicode: ghij
 `,
 	), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	err = Load("/src/fa-error-3")
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "ghij")
 
-	afero.WriteFile(fs, "/src/fa-error-4/metadata/icons.yml", []byte(
+	err = afero.WriteFile(fs, "/src/fa-error-4/metadata/icons.yml", []byte(
 		`some-icon:
   label: Should Not Matter
   styles:
@@ -70,6 +74,7 @@ bad-icon:
   unicode: abcd
 `,
 	), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	err = Load("/src/fa-error-4")
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "unknown FontAwesome style")
@@ -77,7 +82,7 @@ bad-icon:
 
 func TestValid(t *testing.T) {
 	fs = afero.NewMemMapFs()
-	afero.WriteFile(fs, "/src/fa/metadata/icons.yml", []byte(
+	err := afero.WriteFile(fs, "/src/fa/metadata/icons.yml", []byte(
 		`
 some-icon:
   styles:
@@ -99,6 +104,7 @@ all-icon:
   unicode: 64
 `,
 	), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	require.NoError(t, Load("/src/fa"))
 
 	pangoTesting.AssertText(t, "a", pango.Icon("fa-some-icon").String())

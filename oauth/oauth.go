@@ -204,7 +204,7 @@ func (c *Config) prompt(index, total int, force bool) bool {
 	fmt.Fprintf(stdout, "- Visit %v and enter the code here:\n> ", authURL)
 	var authCode string
 	if _, err = fmt.Fscan(stdin, &authCode); err == nil {
-		c.token, err = c.config.Exchange(oauth2.NoContext, authCode)
+		c.token, err = c.config.Exchange(context.Background(), authCode)
 	}
 	if err == nil {
 		err = storeToken(c.filename, c.token)

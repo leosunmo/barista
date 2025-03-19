@@ -67,24 +67,24 @@ type UnitInfo struct {
 
 // Start enqueues a start job, and possibly dependant jobs.
 func (u UnitInfo) Start() {
-	u.call("Start", "fail")
+	_, _ = u.call("Start", "fail")
 }
 
 // Stop stops the specified unit rather than starting it.
 func (u UnitInfo) Stop() {
-	u.call("Stop", "fail")
+	_, _ = u.call("Stop", "fail")
 }
 
 // Restart restarts a unit. If a service is restarted that isn't running it will
 // be started.
 func (u UnitInfo) Restart() {
-	u.call("Restart", "fail")
+	_, _ = u.call("Restart", "fail")
 }
 
 // Reload reloads a unit. Reloading is done only if the unit is already running
 // and fails otherwise.
 func (u UnitInfo) Reload() {
-	u.call("Reload", "fail")
+	_, _ = u.call("Reload", "fail")
 }
 
 func watchUnit(name string, busType ...dbus.BusType) *dbus.PropertiesWatcher {

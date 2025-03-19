@@ -132,7 +132,7 @@ func watchNameOwner(
 		Updates:  updates,
 	}
 	var names []string
-	listNames.call(conn).Store(&names)
+	_ = listNames.call(conn).Store(&names)
 	for _, n := range names {
 		if !matcher(n) {
 			continue

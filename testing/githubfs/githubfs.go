@@ -67,7 +67,9 @@ func (f *Fs) fetch(name string) error {
 	modTime := r.Header.Get("Last-Modified")
 	if parsed, err := http.ParseTime(modTime); err == nil {
 		local := parsed.Local()
-		f.backingFs.Chtimes(name, local, local)
+		if err = f.backingFs.Chtimes(name, local, local); err != nil {
+			return fmt.Errorf("failed to set access and modtime: %v", err)
+		}
 	}
 	return err
 }

@@ -130,7 +130,7 @@ func (s *timerfdScheduler) EveryAlign(interval time.Duration, offset time.Durati
 
 // Stop implements the schedulerImpl interface.
 func (s *timerfdScheduler) Stop() {
-	s.timerfd.Settime(&unix.ItimerSpec{}, nil, false, false)
+	_ = s.timerfd.Settime(&unix.ItimerSpec{}, nil, false, false)
 }
 
 // Close implements the schedulerImpl interface.

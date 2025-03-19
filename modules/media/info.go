@@ -63,26 +63,26 @@ func (i Info) TruncatedPosition(unit string) string {
 }
 
 // Play starts playback of the current track.
-func (i Info) Play() { i.call("Play") }
+func (i Info) Play() { _, _ = i.call("Play") }
 
 // Pause pauses the current track, keeping the current playback position.
-func (i Info) Pause() { i.call("Pause") }
+func (i Info) Pause() { _, _ = i.call("Pause") }
 
 // PlayPause toggles between playing and paused.
-func (i Info) PlayPause() { i.call("PlayPause") }
+func (i Info) PlayPause() { _, _ = i.call("PlayPause") }
 
 // Stop stops playback and resets the playback position.
-func (i Info) Stop() { i.call("Stop") }
+func (i Info) Stop() { _, _ = i.call("Stop") }
 
 // Next switches to the next track.
-func (i Info) Next() { i.call("Next") }
+func (i Info) Next() { _, _ = i.call("Next") }
 
 // Previous switches to the previous track.
-func (i Info) Previous() { i.call("Previous") }
+func (i Info) Previous() { _, _ = i.call("Previous") }
 
 // Seek seeks to the given position within the currently playing track.
 func (i Info) Seek(offset time.Duration) {
-	i.call("Seek", int64(offset/time.Microsecond))
+	_, _ = i.call("Seek", int64(offset/time.Microsecond))
 }
 
 func (i *Info) set(key string, value interface{}) {
