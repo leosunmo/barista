@@ -115,7 +115,7 @@ func shorten(iface, name string) string {
 		return name
 	}
 	short := strings.TrimPrefix(name, iface+".")
-	if strings.ContainsRune(short, '.') {
+	if !strings.ContainsRune(short, '.') {
 		return short
 	}
 	return "." + short
