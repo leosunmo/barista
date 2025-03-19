@@ -72,6 +72,7 @@ func TestReformat(t *testing.T) {
 	slotter.Activate("A")
 	testBar.LatestOutput(1, 5).AssertText([]string{"<", "-", "-", ">"})
 
+	// TODO(leo): this last assertion is flaky.
 	original.OutputText("baz")
 	testBar.NextOutput().AssertText([]string{"<", "baz", "-", "-", ">"})
 }
