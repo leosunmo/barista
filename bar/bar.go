@@ -15,8 +15,10 @@
 // Package bar allows a user to create a go binary that follows the i3bar protocol.
 package bar
 
-import "image/color"
-import "time"
+import (
+	"image/color"
+	"time"
+)
 
 // TextAlignment defines the alignment of text within a block.
 // Using TextAlignment rather than string opens up the possibility of i18n without
