@@ -183,10 +183,10 @@ type cloudiness int
 
 const (
 	cloudsNone      cloudiness = 0
-	cloudsFew                  = 2
-	cloudsScattered            = 4
-	cloudsBroken               = 7
-	cloudsOvercast             = 8
+	cloudsFew       cloudiness = 2
+	cloudsScattered cloudiness = 4
+	cloudsBroken    cloudiness = 7
+	cloudsOvercast  cloudiness = 8
 )
 
 var cloudinessMap = map[string]cloudiness{
