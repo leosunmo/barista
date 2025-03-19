@@ -87,7 +87,8 @@ func TestProperties(t *testing.T) {
 	obj.SetPropertyForTest("foo", "whatever", SignalTypeInvalidated)
 	assertNotUpdated(t, w, "On uninteresting property change")
 
-	obj.SetProperty("d", 5)
+	err := obj.SetProperty("d", 5)
+	require.NoError(t, err, "On property set")
 	u = assertUpdated(t, w, "On property change with signal")
 	require.Equal(t, PropertiesChange{"d": {nil, 5}}, u,
 		"Nil old value for previously ignored set")

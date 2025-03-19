@@ -43,7 +43,7 @@ func (r Repeat) At(times ...time.Time) bar.TimedOutput {
 	sort.Slice(times, func(i, j int) bool {
 		return times[i].Before(times[j])
 	})
-	return &repeating{r, repeatAtTimes{times}}
+	return &repeating{r, &repeatAtTimes{times}}
 }
 
 type timer interface {
@@ -82,7 +82,7 @@ type repeatAtTimes struct {
 	times []time.Time
 }
 
-func (r repeatAtTimes) after(now time.Time) time.Time {
+func (r *repeatAtTimes) after(now time.Time) time.Time {
 	for i, t := range r.times {
 		if t.After(now) {
 			r.times = r.times[i:]

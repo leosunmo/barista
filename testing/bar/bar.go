@@ -74,9 +74,7 @@ func Run(m ...bar.Module) {
 			segments := make(bar.Segments, 0)
 			out := b.moduleSet.LastOutputs()
 			for _, mod := range out {
-				for _, seg := range mod {
-					segments = append(segments, seg)
-				}
+				segments = append(segments, mod...)
 			}
 			l.Fine("%s new output (by %d): %v",
 				l.ID(b.moduleSet), updated, debugOut(out[updated]))

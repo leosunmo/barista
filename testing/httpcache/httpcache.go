@@ -17,9 +17,9 @@ Package httpcache provides a RoundTripper that stores all responses on disk, and
 returns cached responses for any requests that have been made before. This
 package is provided for a very specific purpose, and is unlikely to be widely
 useful. Be aware of the caveats before using this package:
-- Requests are keyed purely based on the URL. All other data from the request
-  are ignored, which includes headers, POST data, and even query parameters.
-- Responses are cached *forever* (until manually deleted).
+  - Requests are keyed purely based on the URL. All other data from the request
+    are ignored, which includes headers, POST data, and even query parameters.
+  - Responses are cached *forever* (until manually deleted).
 
 This cache is useful for quickly prototyping bar customisations. By replacing
 the Transport of http.DefaultClient (or replacing http.DefaultTransport), the
@@ -34,7 +34,6 @@ package httpcache
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -71,8 +70,13 @@ type roundTripper struct {
 }
 
 func (c roundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	path := filepath.Join(c.cacheDir, keyForURL(req.URL))
-	if file, err := os.Open(path); err == nil {
+	key := keyForURL(req.URL)
+	path := filepath.Join(c.cacheDir, key)
+	absPath, err := filepath.Abs(path)
+	if err != nil || !strings.HasPrefix(absPath, c.cacheDir) {
+		return nil, fmt.Errorf("invalid cache path: %s", path)
+	}
+	if file, err := os.Open(absPath); err == nil {
 		return http.ReadResponse(bufio.NewReader(file), req)
 	}
 	resp, err := c.RoundTripper.RoundTrip(req)
@@ -81,7 +85,7 @@ func (c roundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 	body, err := httputil.DumpResponse(resp, true)
 	if err == nil {
-		err = ioutil.WriteFile(path, body, 0600)
+		err = os.WriteFile(absPath, body, 0600)
 	}
 	return resp, err
 }

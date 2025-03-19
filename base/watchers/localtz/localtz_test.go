@@ -15,7 +15,6 @@
 package localtz
 
 import (
-	"io/ioutil"
 	"os"
 	"path"
 	"sync/atomic"
@@ -28,27 +27,23 @@ import (
 )
 
 func newTempFile() string {
-	dir, err := ioutil.TempDir("", "localtz")
+	dir, err := os.MkdirTemp("", "localtz")
 	if err != nil {
 		panic(err)
 	}
 	return path.Join(dir, "localtime")
 }
 
-// Must run before localtz.go init(), so use IIFE instead.
-var ignored = func() int {
-	tzFile = ""
-	return 0
-}()
-
 func TestTimezoneChanges(t *testing.T) {
+	// TODO(leo): This test is flaky.
 	require := require.New(t)
 	atomic.StoreUint32(&testMode, 0)
 	tzFile = newTempFile()
 	go watchTz(tzFile)
 
 	next := Next()
-	os.Symlink("/usr/share/zoneinfo/Europe/Berlin", tzFile)
+	err := os.Symlink("/usr/share/zoneinfo/Europe/Berlin", tzFile)
+	require.NoError(err, "failed to symlink")
 	notifier.AssertClosed(t, next)
 
 	berlin, _ := time.LoadLocation("Europe/Berlin")
@@ -59,7 +54,8 @@ func TestTimezoneChanges(t *testing.T) {
 	notifier.AssertNoUpdate(t, next, "On unlink")
 	require.Equal(berlin, Get(), "timezone does not revert to local")
 
-	os.Symlink("/usr/share/zoneinfo/Africa/Kinshasa", tzFile)
+	err = os.Symlink("/usr/share/zoneinfo/Africa/Kinshasa", tzFile)
+	require.NoError(err, "failed to symlink")
 	notifier.AssertClosed(t, next)
 
 	westCongo, _ := time.LoadLocation("Africa/Kinshasa")
@@ -73,7 +69,8 @@ func TestErrorNotSymlink(t *testing.T) {
 	go watchTz(tzFile)
 
 	next := Next()
-	os.OpenFile(tzFile, os.O_RDONLY|os.O_CREATE, 0666)
+	_, err := os.OpenFile(tzFile, os.O_RDONLY|os.O_CREATE, 0666)
+	require.NoError(err, "failed to open file")
 	notifier.AssertClosed(t, next, "not a symlink")
 	require.Equal(time.Local, Get(), "reverts to time.Local")
 }
@@ -85,7 +82,8 @@ func TestErrorBadLocation(t *testing.T) {
 	go watchTz(tzFile)
 
 	next := Next()
-	os.Symlink("/usr/share/zoneinfo/Nowhere/SomeCity", tzFile)
+	err := os.Symlink("/usr/share/zoneinfo/Nowhere/SomeCity", tzFile)
+	require.NoError(err, "failed to symlink")
 	notifier.AssertClosed(t, next, "bad location")
 	require.Equal(time.Local, Get(), "reverts to time.Local")
 }
@@ -98,7 +96,8 @@ func TestErrorBadSymlink(t *testing.T) {
 
 	next := Next()
 	os.Remove(tzFile)
-	os.Symlink("foobar", tzFile)
+	err := os.Symlink("foobar", tzFile)
+	require.NoError(err, "failed to symlink")
 	notifier.AssertClosed(t, next, "bad symlink") // 23!
 	require.Equal(time.Local, Get(), "reverts to time.Local")
 }
@@ -109,14 +108,16 @@ func TestPermanentError(t *testing.T) {
 	tzFile = newTempFile()
 	go watchTz(tzFile)
 
-	os.OpenFile(tzFile, os.O_RDONLY|os.O_CREATE, 0666)
+	_, err := os.OpenFile(tzFile, os.O_RDONLY|os.O_CREATE, 0666)
+	require.NoError(err, "failed to open file")
 	atomic.AddInt32(&errCount, 3) // exhaust retries.
 	time.Sleep(2 * time.Second)   // for the last loop to expire.
 	require.Equal(time.Local, Get(), "resets to Local on permanent failure")
 
 	os.Remove(tzFile)
 	next := Next()
-	os.Symlink("/usr/share/zoneinfo/America/Mexico_City", tzFile)
+	err = os.Symlink("/usr/share/zoneinfo/America/Mexico_City", tzFile)
+	require.NoError(err, "failed to symlink")
 	require.Equal(time.Local, Get(), "fixed on Local after permanent failure")
 	notifier.AssertNoUpdate(t, next, "Not notified after permanent failure")
 }
@@ -144,6 +145,7 @@ func TestSetForTest(t *testing.T) {
 
 	next = Next()
 	os.Remove(tzFile)
-	os.Symlink("/usr/share/zoneinfo/Europe/Rome", tzFile)
+	err := os.Symlink("/usr/share/zoneinfo/Europe/Rome", tzFile)
+	require.NoError(err, "failed to symlink")
 	notifier.AssertNoUpdate(t, next, "Real changes ignored in test mode")
 }

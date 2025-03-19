@@ -175,8 +175,10 @@ func TestLoadFromMap(t *testing.T) {
 
 func TestLoadFromConfig(t *testing.T) {
 	fs = afero.NewMemMapFs()
-	afero.WriteFile(fs, "empty", []byte{}, 0644)
-	afero.WriteFile(fs, "no-colors", []byte(`
+	err := afero.WriteFile(fs, "empty", []byte{}, 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
+
+	err = afero.WriteFile(fs, "no-colors", []byte(`
 general {
 	output_format = "i3bar"
 	colors = true
@@ -189,14 +191,16 @@ localtime {
 	format = "%H:%M"
 }
 `), 0644)
-	afero.WriteFile(fs, "simple", []byte(`
+	require.NoError(t, err, "afero.WriteFile failed")
+	err = afero.WriteFile(fs, "simple", []byte(`
 general {
 	output_format = "i3bar"
 	colors = true
 	color_good = "#007700"
 }
 `), 0644)
-	afero.WriteFile(fs, "mixed", []byte(`
+	require.NoError(t, err, "afero.WriteFile failed")
+	err = afero.WriteFile(fs, "mixed", []byte(`
 general {
 	output_format = "i3bar"
 	colors = true
@@ -211,6 +215,7 @@ general {
 	color_no_value
 }
 `), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 
 	require.Error(t, LoadFromConfig("non-existent"), "non-existent file")
 
@@ -237,10 +242,10 @@ general {
 	}
 }
 
-func TestLoadingBarConfig(t *testing.T) {
+func TestLoadingDefaultBarConfig(t *testing.T) {
 	scheme = map[string]ColorfulColor{}
 	attemptedBarID := ""
-	getBarConfig = func(barID string) []byte {
+	getBarConfig = func(_ string, barID string) []byte {
 		attemptedBarID = barID
 		return []byte(`
 {"id":"main","tray_padding":2,"mode":"dock",
@@ -274,7 +279,7 @@ func init() {
 	}
 	if len(os.Args) == 2 && os.Args[1] == "LoadBarConfig" {
 		attemptedBarID := ""
-		getBarConfig = func(barID string) []byte {
+		getBarConfig = func(_ string, barID string) []byte {
 			attemptedBarID = barID
 			return []byte(`{}`)
 		}

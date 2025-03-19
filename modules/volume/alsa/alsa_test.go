@@ -149,7 +149,7 @@ type elem struct {
 }
 
 type handle struct {
-	name string
+	name string //nolint: unused // This breaks the tests if removed. It's presumably a CGo thing.
 }
 
 func TestAlsaModule(t *testing.T) {

@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//nolint:errcheck // Ignore unchecked errors in this test code.
 package barista
 
 import (
@@ -269,7 +270,7 @@ func TestPauseResume(t *testing.T) {
 		require.Fail(t, "Scheduler not triggered while bar is running")
 	}
 
-	unix.Kill(unix.Getpid(), unix.SIGUSR1)
+	_ = unix.Kill(unix.Getpid(), unix.SIGUSR1)
 	require.Equal(t, dEvtPaused, (<-pauseChan).kind)
 	module1.OutputText("a")
 	module2.OutputText("b")
@@ -286,14 +287,14 @@ func TestPauseResume(t *testing.T) {
 	case <-time.After(10 * time.Millisecond): // test passed
 	}
 
-	unix.Kill(unix.Getpid(), unix.SIGUSR1)
+	_ = unix.Kill(unix.Getpid(), unix.SIGUSR1)
 	select {
 	case <-pauseChan:
 		require.Fail(t, "Pausing a paused bar is a nop")
 	case <-time.After(10 * time.Millisecond): // test passed.
 	}
 
-	unix.Kill(unix.Getpid(), unix.SIGUSR2)
+	_ = unix.Kill(unix.Getpid(), unix.SIGUSR2)
 	require.Equal(t, dEvtResumed, (<-pauseChan).kind)
 	out = readOutputTexts(t, mockStdout)
 	require.Equal(t, []string{"a", "b"}, out,
@@ -309,20 +310,20 @@ func TestPauseResume(t *testing.T) {
 		require.Fail(t, "Scheduler not triggered after bar is resumed")
 	}
 
-	unix.Kill(unix.Getpid(), unix.SIGUSR2)
+	_ = unix.Kill(unix.Getpid(), unix.SIGUSR2)
 	select {
 	case <-pauseChan:
 		require.Fail(t, "Resuming a running bar is a nop")
 	case <-time.After(10 * time.Millisecond): // test passed.
 	}
 
-	unix.Kill(unix.Getpid(), unix.SIGUSR1)
+	_ = unix.Kill(unix.Getpid(), unix.SIGUSR1)
 	require.Equal(t, dEvtPaused, (<-pauseChan).kind)
 	module2.OutputText("c")
 	require.False(t, mockStdout.WaitForWrite(10*time.Millisecond),
 		"No output while paused, got %s", mockStdout.ReadNow())
 
-	unix.Kill(unix.Getpid(), unix.SIGUSR2)
+	_ = unix.Kill(unix.Getpid(), unix.SIGUSR2)
 	require.Equal(t, dEvtResumed, (<-pauseChan).kind)
 	out = readOutputTexts(t, mockStdout)
 	require.Equal(t, []string{"a", "c"}, out,

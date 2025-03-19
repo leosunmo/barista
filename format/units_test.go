@@ -16,6 +16,7 @@ package format
 
 import (
 	"go/importer"
+	"go/token"
 	"go/types"
 	"testing"
 	"time"
@@ -48,7 +49,7 @@ func TestSI(t *testing.T) {
 }
 
 func TestSIUnits(t *testing.T) {
-	assertFormatted := func(expected string, unit interface{}, width int) {
+	assertFormatted := func(expected string, unit interface{}, _ int) {
 		formatted, ok := Unit(unit)
 		require.True(t, ok, "could not format %v as a unit (expected %s)", unit, expected)
 		require.Equal(t, expected, formatted[0].String(),
@@ -105,7 +106,7 @@ func TestAllUnitsHandled(t *testing.T) {
 
 	// Verify that all units supported by the unit package are included in the
 	// test cases.
-	pkg, err := importer.For("source", nil).Import("github.com/martinlindhe/unit")
+	pkg, err := importer.ForCompiler(token.NewFileSet(), "source", nil).Import("github.com/martinlindhe/unit")
 	require.NoError(t, err)
 	for _, declName := range pkg.Scope().Names() {
 		obj := pkg.Scope().Lookup(declName)

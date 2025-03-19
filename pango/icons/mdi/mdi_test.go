@@ -30,7 +30,7 @@ func TestInvalid(t *testing.T) {
 	fs = afero.NewMemMapFs()
 	require.Error(t, Load("/src/no-such-directory"))
 
-	afero.WriteFile(fs, "/src/material-error-1/scss/_variables.scss", []byte(
+	err := afero.WriteFile(fs, "/src/material-error-1/scss/_variables.scss", []byte(
 		`
 $blah: "red";
 $foobar: "green";
@@ -42,12 +42,14 @@ $mdi-icons: (
     "badIcon": food
 );`,
 	), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	require.Error(t, Load("/src/material-error-1"))
 
-	afero.WriteFile(fs, "/src/material-error-2/scss/_variables.scss", nil, 0644)
+	err = afero.WriteFile(fs, "/src/material-error-2/scss/_variables.scss", nil, 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	require.Error(t, Load("/src/material-error-2"))
 
-	afero.WriteFile(fs, "/src/material-error-3/scss/_variables.scss", []byte(
+	err = afero.WriteFile(fs, "/src/material-error-3/scss/_variables.scss", []byte(
 		`
 $blah: "red";
 $foobar: "green";
@@ -60,9 +62,10 @@ $mdi-icons: (
 
 $randomStuff: "yellow";`,
 	), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	require.Error(t, Load("/src/material-error-3"))
 
-	afero.WriteFile(fs, "/src/material-error-4/scss/_variables.scss", []byte(
+	err = afero.WriteFile(fs, "/src/material-error-4/scss/_variables.scss", []byte(
 		`
 $blah: "red";
 $foobar: "green";
@@ -71,12 +74,13 @@ $mdi-icons: (
     "someIcon": 61,
 `,
 	), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	require.Error(t, Load("/src/material-error-4"))
 }
 
 func TestValid(t *testing.T) {
 	fs = afero.NewMemMapFs()
-	afero.WriteFile(fs, "/src/material/scss/_variables.scss", []byte(
+	err := afero.WriteFile(fs, "/src/material/scss/_variables.scss", []byte(
 		`
 $blah: "red";
 $foobar: "green";
@@ -86,6 +90,7 @@ $mdi-icons: (
     "otherIcon": 62
 );`,
 	), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	require.NoError(t, Load("/src/material"))
 	pangoTesting.AssertText(t, "a", pango.Icon("mdi-someIcon").String())
 }

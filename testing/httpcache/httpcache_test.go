@@ -16,7 +16,7 @@ package httpcache
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -32,7 +32,7 @@ func TestCache(t *testing.T) {
 	u, _ := url.Parse(server.URL)
 	base := sanitizeRe.ReplaceAllString(u.Host, "-")
 
-	dir, err := ioutil.TempDir("", "httpcache")
+	dir, err := os.MkdirTemp("", "httpcache")
 	if err != nil {
 		t.Fatalf("failed to create test directory: %s", err)
 	}
@@ -41,11 +41,13 @@ func TestCache(t *testing.T) {
 	os.Setenv("XDG_CACHE_HOME", dir)
 	client := &http.Client{Transport: Wrap(http.DefaultTransport)}
 
-	client.Get(server.URL + "/basic/foo")
+	_, err = client.Get(server.URL + "/basic/foo")
+	require.NoError(t, err, "http get failed")
 	_, err = os.Stat(fmt.Sprintf("%s/barista/http/%s_basic-foo", dir, base))
 	require.NoError(t, err, "simple response cached to correct file")
 
-	client.Get(server.URL + "/code/404")
+	_, err = client.Get(server.URL + "/code/404")
+	require.NoError(t, err, "http get failed")
 	_, err = os.Stat(fmt.Sprintf("%s/barista/http/%s_code-404", dir, base))
 	require.NoError(t, err, "http non-200 responses also cached")
 
@@ -53,19 +55,19 @@ func TestCache(t *testing.T) {
 
 	r, err := client.Get(server.URL + "/tpl/debug?param=foo&bar=baz")
 	require.NoError(t, err)
-	body, _ := ioutil.ReadAll(r.Body)
+	body, _ := io.ReadAll(r.Body)
 	require.Equal(t, "\nbar = baz\nparam = foo\n", string(body))
 
 	server.Close()
 
 	r, err = client.Get(server.URL + "/basic/foo")
 	require.NoError(t, err, "simple response cached")
-	body, _ = ioutil.ReadAll(r.Body)
+	body, _ = io.ReadAll(r.Body)
 	require.Equal(t, "bar", string(body), "full body cached")
 
 	r, err = client.Get(server.URL + "/tpl/debug?param=other-value")
 	require.NoError(t, err, "response cached, despite different query params")
-	body, _ = ioutil.ReadAll(r.Body)
+	body, _ = io.ReadAll(r.Body)
 	require.Equal(t, "\nbar = baz\nparam = foo\n", string(body),
 		"body cached, not affected by query parameters")
 

@@ -16,6 +16,7 @@
 package calendar
 
 import (
+	"context"
 	"net/http"
 	"time"
 
@@ -27,6 +28,7 @@ import (
 
 	"golang.org/x/oauth2/google"
 	calendar "google.golang.org/api/calendar/v3"
+	"google.golang.org/api/option"
 )
 
 // Status represents the response/status for an event.
@@ -143,7 +145,7 @@ func (m *Module) Stream(sink bar.Sink) {
 	if wrapForTest != nil {
 		wrapForTest(client)
 	}
-	srv, _ := calendar.New(client)
+	srv, _ := calendar.NewService(context.Background(), option.WithHTTPClient(client))
 	outf := m.outputFunc.Get().(func(EventList) bar.Output)
 	nextOutputFunc, done := m.outputFunc.Subscribe()
 	defer done()

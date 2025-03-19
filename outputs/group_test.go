@@ -322,27 +322,27 @@ func TestTimedOutputGroup(t *testing.T) {
 	// everySec is still at 02 because it's start time is +60ms, reset when it
 	// was added to the group.
 	assertNextTexts(t, o, []string{"20:47:02", "20:47:00", "fixed", "20:47:03"})
-	assertNextTexts(t, o, []string{"20:47:03", "20:47:00", "fixed", "20:47:03"})
-	assertNextTexts(t, o, []string{"20:47:04", "20:47:00", "fixed", "20:47:03"})
+	assertNextTexts(t, o, []string{"20:47:03", "20:47:00", "fixed"})
+	assertNextTexts(t, o, []string{"20:47:04", "20:47:00", "fixed"})
 
 	timing.AdvanceBy(55 * time.Second)
-	assertCurrentTexts(t, o, []string{"20:47:59", "20:47:00", "fixed", "20:47:03"})
+	assertCurrentTexts(t, o, []string{"20:47:59", "20:47:00", "fixed"})
 	assertNextTexts(t, o, []string{"20:47:59", "20:47:00", "fixed", "20:48:00"})
-	assertNextTexts(t, o, []string{"20:48:00", "20:48:00", "fixed", "20:48:00"})
-	assertNextTexts(t, o, []string{"20:48:01", "20:48:00", "fixed", "20:48:00"})
+	assertNextTexts(t, o, []string{"20:48:00", "20:48:00", "fixed"})
+	assertNextTexts(t, o, []string{"20:48:01", "20:48:00", "fixed"})
 
 	timing.AdvanceBy(57 * time.Second)
-	assertCurrentTexts(t, o, []string{"20:48:58", "20:48:00", "fixed", "20:48:00"})
-	assertNextTexts(t, o, []string{"20:48:59", "20:48:00", "fixed", "20:48:00"})
-	assertNextTexts(t, o, []string{"20:49:00", "20:49:00", "fixed", "20:48:00"})
+	assertCurrentTexts(t, o, []string{"20:48:58", "20:48:00", "fixed"})
+	assertNextTexts(t, o, []string{"20:48:59", "20:48:00", "fixed"})
+	assertNextTexts(t, o, []string{"20:49:00", "20:49:00", "fixed"})
 
-	assertNextTexts(t, o, []string{"20:49:01", "20:49:00", "fixed", "20:48:00"})
-	assertNextTexts(t, o, []string{"20:49:02", "20:49:00", "fixed", "20:48:00"})
-	assertNextTexts(t, o, []string{"20:49:03", "20:49:00", "fixed", "20:48:00"})
-	assertNextTexts(t, o, []string{"20:49:04", "20:49:00", "fixed", "20:48:00"})
+	assertNextTexts(t, o, []string{"20:49:01", "20:49:00", "fixed"})
+	assertNextTexts(t, o, []string{"20:49:02", "20:49:00", "fixed"})
+	assertNextTexts(t, o, []string{"20:49:03", "20:49:00", "fixed"})
+	assertNextTexts(t, o, []string{"20:49:04", "20:49:00", "fixed"})
 
 	assertNextTexts(t, o, []string{"20:49:04", "20:49:00", "fixed", "20:49:05"})
-	assertNextTexts(t, o, []string{"20:49:05", "20:49:00", "fixed", "20:49:05"})
+	assertNextTexts(t, o, []string{"20:49:05", "20:49:00", "fixed"})
 
 	timing.AdvanceBy(5 * time.Hour)
 	assertCurrentTexts(t, o, []string{"01:49:05", "01:49:00", "fixed", "21:47:00"})

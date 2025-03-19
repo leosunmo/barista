@@ -1,0 +1,15 @@
+linters-settings:
+  errcheck:
+    # List of functions to exclude from checking, where each entry is a single function to exclude.
+    # See https://github.com/kisielk/errcheck#excluding-functions for details.
+    exclude-functions:
+      - (io/ioutil).ReadFile
+      - io.Copy
+      - io.WriteString
+      - (net/http.ResponseWriter).Write
+      - os.MkdirAll
+      - (io.Writer).Write
+      - os.WriteFile
+      - os.ReadFile
+      - (*github.com/leosunmo/barista/testing/mockio.Readable).WriteString
+      - (*github.com/leosunmo/barista/testing/mockio.Readable).Write

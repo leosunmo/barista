@@ -207,11 +207,11 @@ func TestStdin(t *testing.T) {
 	}
 
 	request <- 1
-	r, ok := resultOrTimeout(time.Millisecond)
+	_, ok := resultOrTimeout(time.Millisecond)
 	require.False(t, ok, "read should not return when nothing has been written")
 
 	stdin.WriteString("")
-	r, ok = resultOrTimeout(time.Second)
+	r, ok := resultOrTimeout(time.Second)
 	require.True(t, ok, "read returns empty string if written")
 	require.Equal(t, readResult{"", nil}, r, "read returns empty string if written")
 
@@ -242,7 +242,7 @@ func TestStdin(t *testing.T) {
 	require.Equal(t, readResult{"12345678", nil}, r, "read returns concatenation of multiple writes")
 
 	request <- 4
-	r, ok = resultOrTimeout(time.Millisecond)
+	_, ok = resultOrTimeout(time.Millisecond)
 	require.False(t, ok, "read should wait for a write when buffer has been emptied")
 
 	stdin.Write([]byte("xyz"))
