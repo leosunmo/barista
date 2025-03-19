@@ -43,11 +43,6 @@ type paModule struct {
 	deviceType deviceType
 }
 
-func openPulseAudio() (*proto.Client, error) {
-	client, _, err := proto.Connect("")
-	return client, err
-}
-
 // Device creates a PulseAduio volume module for a named device that can either be a sink or a source.
 func Device(deviceName string, deviceType deviceType) volume.Provider {
 	return &paModule{deviceName: deviceName, deviceType: deviceType}
