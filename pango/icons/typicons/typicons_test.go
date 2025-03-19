@@ -30,15 +30,17 @@ func TestInvalid(t *testing.T) {
 	fs = afero.NewMemMapFs()
 	require.Error(t, Load("/src/no-such-directory"))
 
-	afero.WriteFile(fs, "/src/typicons-error-1/src/font/typicons.json", []byte(
+	err := afero.WriteFile(fs, "/src/typicons-error-1/src/font/typicons.json", []byte(
 		`-- Invalid JSON --`,
 	), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	require.Error(t, Load("/src/typicons-error-1"))
 
-	afero.WriteFile(fs, "/src/typicons-error-2/src/font/typicons.json", nil, 0644)
+	err = afero.WriteFile(fs, "/src/typicons-error-2/src/font/typicons.json", nil, 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	require.Error(t, Load("/src/typicons-error-2"))
 
-	afero.WriteFile(fs, "/src/typicons-error-3/src/font/typicons.json", []byte(
+	err = afero.WriteFile(fs, "/src/typicons-error-3/src/font/typicons.json", []byte(
 		`{
 			"someIcon": 97,
   			"otherIcon": 98,
@@ -46,12 +48,13 @@ func TestInvalid(t *testing.T) {
 		}
 `,
 	), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	require.Error(t, Load("/src/typicons-error-3"))
 }
 
 func TestValid(t *testing.T) {
 	fs = afero.NewMemMapFs()
-	afero.WriteFile(fs, "/src/typicons/src/font/typicons.json", []byte(
+	err := afero.WriteFile(fs, "/src/typicons/src/font/typicons.json", []byte(
 		`{
 			"someIcon": 97,
   			"otherIcon": 98,
@@ -59,6 +62,7 @@ func TestValid(t *testing.T) {
 		}
 `,
 	), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	require.NoError(t, Load("/src/typicons"))
 	pangoTesting.AssertText(t, "a", pango.Icon("typecn-someIcon").String())
 	pangoTesting.AssertText(t, "b", pango.Icon("typecn-otherIcon").String())

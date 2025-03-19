@@ -15,7 +15,6 @@
 package file
 
 import (
-	"io/ioutil"
 	"os"
 	"path"
 	"testing"
@@ -26,7 +25,7 @@ import (
 )
 
 func testDir(t *testing.T) string {
-	dir, err := ioutil.TempDir("", "fsnotify")
+	dir, err := os.MkdirTemp("", "fsnotify")
 	if err != nil {
 		t.Fatalf("failed to create test directory: %s", err)
 	}
@@ -49,16 +48,16 @@ func TestWatchOnExistingFile(t *testing.T) {
 	tempDir := testDir(t)
 	defer os.RemoveAll(tempDir)
 	tmpFile := path.Join(tempDir, "somefile")
-	ioutil.WriteFile(tmpFile, []byte(`foo`), 0644)
+	os.WriteFile(tmpFile, []byte(`foo`), 0644)
 
 	w := Watch(tmpFile)
 	defer w.Unsubscribe()
 	notifier.AssertNoUpdate(t, w.Updates, "On start")
 
-	ioutil.WriteFile(tmpFile, []byte(`bar`), 0644)
+	os.WriteFile(tmpFile, []byte(`bar`), 0644)
 	assertNotified(t, w.Updates, "On write")
 
-	ioutil.ReadFile(tmpFile)
+	os.ReadFile(tmpFile)
 	notifier.AssertNoUpdate(t, w.Updates, "On read")
 }
 
@@ -66,7 +65,7 @@ func TestDeleteAndRecreate(t *testing.T) {
 	tempDir := testDir(t)
 	defer os.RemoveAll(tempDir)
 	tmpFile := path.Join(tempDir, "foo")
-	ioutil.WriteFile(tmpFile, []byte(`foo`), 0644)
+	os.WriteFile(tmpFile, []byte(`foo`), 0644)
 
 	w := Watch(tmpFile)
 	defer w.Unsubscribe()
@@ -74,7 +73,7 @@ func TestDeleteAndRecreate(t *testing.T) {
 	os.Remove(tmpFile)
 	assertNotified(t, w.Updates, "On delete")
 
-	ioutil.WriteFile(tmpFile, []byte(`foo`), 0644)
+	os.WriteFile(tmpFile, []byte(`foo`), 0644)
 	assertNotified(t, w.Updates, "On recreate")
 }
 
@@ -89,20 +88,20 @@ func TestSubdirectories(t *testing.T) {
 	defer w.Unsubscribe()
 	notifier.AssertNoUpdate(t, w.Updates, "on start with non-existent file")
 
-	ioutil.WriteFile(target, []byte(`foo`), 0644)
+	os.WriteFile(target, []byte(`foo`), 0644)
 	assertNotified(t, w.Updates, "on file modification")
 
 	os.RemoveAll(path.Join(tempDir, "foo"))
 	assertNotified(t, w.Updates, "on parent deletion")
 
-	ioutil.WriteFile(path.Join(tempDir, "notfoo"), []byte(`bar`), 0644)
+	os.WriteFile(path.Join(tempDir, "notfoo"), []byte(`bar`), 0644)
 	os.MkdirAll(path.Join(tempDir, "baz", "etc"), 0755)
 	notifier.AssertNoUpdate(t, w.Updates, "ignores creations in currently watched dir")
 
 	os.MkdirAll(subdir, 0755)
 	notifier.AssertNoUpdate(t, w.Updates, "on creation of parent dir")
 
-	ioutil.WriteFile(target, []byte(`foo`), 0644)
+	os.WriteFile(target, []byte(`foo`), 0644)
 	assertNotified(t, w.Updates, "on file modification")
 
 	os.Remove(target)
@@ -126,7 +125,7 @@ func TestStress(t *testing.T) {
 
 	for i := 0; i < 1000; i++ {
 		os.MkdirAll(subdir, 0755)
-		ioutil.WriteFile(target, []byte(`xx`), 0644)
+		os.WriteFile(target, []byte(`xx`), 0644)
 		os.RemoveAll(path.Join(tempDir, "foo"))
 
 		os.MkdirAll(path.Join(tempDir, "foo", "bar"), 0755)
@@ -146,7 +145,7 @@ func TestStress(t *testing.T) {
 	}
 
 	os.MkdirAll(subdir, 0755)
-	ioutil.WriteFile(target, []byte(`xx`), 0644)
+	os.WriteFile(target, []byte(`xx`), 0644)
 	assertNotified(t, w.Updates, "after stress test")
 }
 
@@ -154,7 +153,7 @@ func TestErrors(t *testing.T) {
 	tempDir := testDir(t)
 	defer os.RemoveAll(tempDir)
 	tmpFile := path.Join(tempDir, "somefile")
-	ioutil.WriteFile(tmpFile, []byte(`foo`), 0644)
+	os.WriteFile(tmpFile, []byte(`foo`), 0644)
 
 	w := Watch(path.Join(tmpFile, "/dir/under/file"))
 	defer w.Unsubscribe()
@@ -174,7 +173,8 @@ func TestErrors(t *testing.T) {
 
 	os.RemoveAll(path.Join(tempDir, "foo"))
 	assertNotified(t, w.Updates, "On parent deletion")
-	os.Create(path.Join(tempDir, "foo"))
+	_, err := os.Create(path.Join(tempDir, "foo"))
+	require.NoError(t, err, "os.Create failed")
 	notifier.AssertNoUpdate(t, w.Updates, "On error")
 	select {
 	case <-w.Errors:

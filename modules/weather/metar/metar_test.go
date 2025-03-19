@@ -64,14 +64,14 @@ func TestExample(t *testing.T) {
 	}, wthr)
 
 	provider.url = ts.URL + "/code/401"
-	wthr, err = provider.GetWeather()
+	_, err = provider.GetWeather()
 	require.Error(t, err)
 
 	provider.url = ts.URL + "/static/bad.xml"
-	wthr, err = provider.GetWeather()
+	_, err = provider.GetWeather()
 	require.Error(t, err)
 
 	provider.url = ts.URL + "/static/no-entries.xml"
-	wthr, err = provider.GetWeather()
+	_, err = provider.GetWeather()
 	require.Error(t, err)
 }

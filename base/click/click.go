@@ -71,7 +71,7 @@ func ButtonE(handler func(bar.Event), btns ...bar.Button) func(bar.Event) {
 // click.Left(func(){exec.Command(cmd).Run()}).
 func RunLeft(cmd string, args ...string) func(bar.Event) {
 	return Left(func() {
-		exec.Command(cmd, args...).Run()
+		_ = exec.Command(cmd, args...).Run()
 	})
 }
 

@@ -277,7 +277,7 @@ func TestFiltering(t *testing.T) {
 	nextW = assertUpdated(t, nextW, subW)
 	notifier.AssertNoUpdate(t, nextLocal, "Named link unchanged")
 	notifier.AssertNoUpdate(t, nextEth, "Named link still not present")
-	nextAll = assertUpdated(t, nextAll, subAll, "A link changed")
+	_ = assertUpdated(t, nextAll, subAll, "A link changed")
 	nextAny = assertUpdated(t, nextAny, subAny, "A link changed")
 	require.Equal(t, wlan0, subAny.Get(), "'best' link is still the same")
 
@@ -341,7 +341,7 @@ func TestTestMode(t *testing.T) {
 	expected.State = Up
 	nextEth = assertUpdated(t, nextEth, subEth)
 	require.Equal(t, expected, subEth.Get())
-	nextAll = assertUpdated(t, nextAll, subAll)
+	_ = assertUpdated(t, nextAll, subAll)
 
 	subEth.Unsubscribe()
 	nlt.UpdateLink(id, Link{State: Dormant})

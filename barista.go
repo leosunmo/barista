@@ -246,7 +246,7 @@ func Run(modules ...bar.Module) error {
 
 // DefaultErrorHandler invokes i3-nagbar to show the full error message.
 func DefaultErrorHandler(e bar.ErrorEvent) {
-	exec.Command("i3-nagbar", "-m", e.Error.Error()).Run()
+	_ = exec.Command("i3-nagbar", "-m", e.Error.Error()).Run()
 }
 
 func colorString(c color.Color) string {

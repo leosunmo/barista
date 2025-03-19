@@ -21,11 +21,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"image/color"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
 
+	"github.com/leosunmo/barista/logging"
 	"github.com/lucasb-eyer/go-colorful"
 	"github.com/spf13/afero"
 )
@@ -148,27 +148,59 @@ type barConfig struct {
 	Colors map[string]string `json:"colors"`
 }
 
-var getBarConfig = func(barID string) []byte {
+var getBarConfig = func(barType string, barID string) []byte {
+	if barType == "swaybar" {
+		out, _ := exec.Command("swaymsg", "-t", "get_bar_config", barID).Output()
+		return out
+	}
 	out, _ := exec.Command("i3-msg", "-t", "get_bar_config", barID).Output()
 	return out
 }
 
 // LoadBarConfig automatically loads colors from the current bar's
-// configuration. It assumes that the parent process is the i3bar instance,
-// and the bar_id command-line flag identifies the bar id.
+// configuration. It supports both i3bar and swaybar and looks for the --bar_id/-b
+// to identify the bar ID to retrieve config from using i3-msg/swaymsg.
 func LoadBarConfig() {
-	i3barPid := os.Getppid()
-	i3barCmdline, _ := ioutil.ReadFile(
-		fmt.Sprintf("/proc/%d/cmdline", i3barPid))
-	barID := "bar0"
-	for _, arg := range bytes.Split(i3barCmdline, []byte{0}) {
-		arg := string(arg)
-		if strings.HasPrefix(arg, "--bar_id=") {
-			barID = strings.TrimPrefix(arg, "--bar_id=")
-			break
+	barPid := os.Getppid()
+	barCmdline, err := os.ReadFile(fmt.Sprintf("/proc/%d/cmdline", barPid))
+	if err != nil {
+		logging.Log("Failed to read parent PID cmdline: %v", err)
+		return
+	}
+
+	barID, barType := "bar0", "i3bar"
+	args := bytes.Split(barCmdline, []byte{0})
+
+	if len(args) > 0 {
+		if string(args[0]) == "swaybar" {
+			barType = "swaybar"
+			barID = "bar-0"
+			for i := 0; i < len(args)-1; i++ {
+				if string(args[i]) == "-b" {
+					if i+1 >= len(args) {
+						// There's a -b but no bar id.
+						// Give up and go with the default bar-0.
+						break
+					}
+					barID = string(args[i+1])
+					break
+				}
+			}
+		} else {
+			for _, arg := range args {
+				if strings.HasPrefix(string(arg), "--bar_id=") {
+					barID = strings.TrimPrefix(string(arg), "--bar_id=")
+					break
+				}
+			}
 		}
 	}
+
 	var parsed barConfig
-	json.Unmarshal(getBarConfig(barID), &parsed)
+	if err := json.Unmarshal(getBarConfig(barType, barID), &parsed); err != nil {
+		logging.Log("Failed to parse bar config: %v", err)
+		return
+	}
+
 	LoadFromMap(parsed.Colors)
 }

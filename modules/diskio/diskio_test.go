@@ -32,7 +32,8 @@ import (
 
 type diskstats map[string][]int
 
-func shouldReturn(stats diskstats) {
+func shouldReturn(t *testing.T, stats diskstats) {
+	t.Helper()
 	var out bytes.Buffer
 	idx := 0
 	for disk, stats := range stats {
@@ -42,7 +43,8 @@ func shouldReturn(stats diskstats) {
 		idx++
 	}
 	lock.Lock()
-	afero.WriteFile(fs, "/proc/diskstats", out.Bytes(), 0644)
+	err := afero.WriteFile(fs, "/proc/diskstats", out.Bytes(), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	lock.Unlock()
 }
 
@@ -58,7 +60,7 @@ func TestDiskIo(t *testing.T) {
 	resetForTest()
 	testBar.New(t)
 
-	shouldReturn(diskstats{
+	shouldReturn(t, diskstats{
 		"sda":  []int{0, 0},
 		"sda1": []int{0, 0},
 	})
@@ -74,7 +76,7 @@ func TestDiskIo(t *testing.T) {
 
 	testBar.LatestOutput(0).Expect("on start")
 
-	shouldReturn(diskstats{
+	shouldReturn(t, diskstats{
 		"sda":  []int{0, 0},
 		"sda1": []int{9, 9},
 	})
@@ -86,7 +88,7 @@ func TestDiskIo(t *testing.T) {
 	// Simpler math.
 	RefreshInterval(time.Second)
 
-	shouldReturn(diskstats{
+	shouldReturn(t, diskstats{
 		"sda":  []int{0, 0},
 		"sda1": []int{9, 10},
 	})
@@ -96,7 +98,7 @@ func TestDiskIo(t *testing.T) {
 	testBar.LatestOutput().AssertText(
 		[]string{"sda1: 512 B/s"}, "on tick")
 
-	shouldReturn(diskstats{
+	shouldReturn(t, diskstats{
 		"sda":  []int{0, 0},
 		"sda1": []int{9, 20},
 	})
@@ -111,7 +113,7 @@ func TestDiskIo(t *testing.T) {
 	testBar.LatestOutput(0).AssertText(
 		[]string{"sda1: 5.0"}, "on output function change")
 
-	shouldReturn(diskstats{
+	shouldReturn(t, diskstats{
 		"sdb":  []int{0, 0},
 		"sdb1": []int{300, 0},
 	})
@@ -120,7 +122,7 @@ func TestDiskIo(t *testing.T) {
 	testBar.LatestOutput().AssertEmpty(
 		"first tick after disk is added/removed")
 
-	shouldReturn(diskstats{
+	shouldReturn(t, diskstats{
 		"sdb":  []int{0, 0},
 		"sdb1": []int{300, 100},
 		"sdc":  []int{0, 0},
@@ -147,7 +149,7 @@ func TestErrors(t *testing.T) {
 	testBar.LatestOutput().AssertError("on first tick if missing diskstats")
 
 	lock.Lock()
-	afero.WriteFile(fs, "/proc/diskstats", []byte(`
+	err := afero.WriteFile(fs, "/proc/diskstats", []byte(`
 -- Lines in weird formats --
 Empty:
 
@@ -160,6 +162,7 @@ a b c d e f g h i j k l m n
 a b sda1 0 0 a 0 0 0 100 0 0 0 0
 a b sda2 0 0 100 0 0 0 b 0 0 0 0
 `), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	lock.Unlock()
 	testBar.Tick()
 	out := testBar.LatestOutput()
@@ -170,9 +173,10 @@ a b sda2 0 0 100 0 0 0 b 0 0 0 0
 	require.Equal(t, 2, out.Len(), "on first tick")
 
 	lock.Lock()
-	afero.WriteFile(fs, "/proc/diskstats", []byte(`
+	err = afero.WriteFile(fs, "/proc/diskstats", []byte(`
 	0 0 sda 0 0 400 0 0 0 400 0 0 0 0
 	`), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	lock.Unlock()
 	testBar.Tick()
 

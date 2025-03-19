@@ -63,26 +63,26 @@ func (i Info) TruncatedPosition(unit string) string {
 }
 
 // Play starts playback of the current track.
-func (i Info) Play() { i.call("Play") }
+func (i Info) Play() { _, _ = i.call("Play") }
 
 // Pause pauses the current track, keeping the current playback position.
-func (i Info) Pause() { i.call("Pause") }
+func (i Info) Pause() { _, _ = i.call("Pause") }
 
 // PlayPause toggles between playing and paused.
-func (i Info) PlayPause() { i.call("PlayPause") }
+func (i Info) PlayPause() { _, _ = i.call("PlayPause") }
 
 // Stop stops playback and resets the playback position.
-func (i Info) Stop() { i.call("Stop") }
+func (i Info) Stop() { _, _ = i.call("Stop") }
 
 // Next switches to the next track.
-func (i Info) Next() { i.call("Next") }
+func (i Info) Next() { _, _ = i.call("Next") }
 
 // Previous switches to the previous track.
-func (i Info) Previous() { i.call("Previous") }
+func (i Info) Previous() { _, _ = i.call("Previous") }
 
 // Seek seeks to the given position within the currently playing track.
 func (i Info) Seek(offset time.Duration) {
-	i.call("Seek", int64(offset/time.Microsecond))
+	_, _ = i.call("Seek", int64(offset/time.Microsecond))
 }
 
 func (i *Info) set(key string, value interface{}) {
@@ -191,8 +191,8 @@ func (i *Info) updateMetadata(metadata map[string]dbus.Variant) {
 // Some mpris players report numeric values as the wrong type. Fix that.
 // TODO: See if this is a solved problem.
 
-func getLong(l interface{}) int64 {
-	switch l.(type) {
+func getLong(l any) int64 {
+	switch l := l.(type) {
 	case int, int8, int16, int32, int64:
 		return reflect.ValueOf(l).Int()
 	case uint, uint8, uint16, uint32, uint64:
@@ -200,14 +200,14 @@ func getLong(l interface{}) int64 {
 	case float32, float64:
 		return int64(reflect.ValueOf(l).Float())
 	case dbus.Variant:
-		return getLong(l.(dbus.Variant).Value())
+		return getLong(l.Value())
 	default:
 		return 0
 	}
 }
 
-func getDouble(d interface{}) float64 {
-	switch d.(type) {
+func getDouble(d any) float64 {
+	switch d := d.(type) {
 	case int, int8, int16, int32, int64:
 		return float64(reflect.ValueOf(d).Int())
 	case uint, uint8, uint16, uint32, uint64:
@@ -215,7 +215,7 @@ func getDouble(d interface{}) float64 {
 	case float32, float64:
 		return reflect.ValueOf(d).Float()
 	case dbus.Variant:
-		return getDouble(d.(dbus.Variant).Value())
+		return getDouble(d.Value())
 	default:
 		return 0.0
 	}

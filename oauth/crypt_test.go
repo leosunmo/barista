@@ -16,7 +16,7 @@ package oauth
 
 import (
 	"errors"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/spf13/afero"
@@ -75,7 +75,7 @@ func TestCryptStore(t *testing.T) {
 
 	require.NoError(t, storeToken("empty.json", &oauth2.Token{}))
 	savedFile, _ := afero.ReadFile(fs, "empty.json")
-	expectedFile, _ := ioutil.ReadFile("testdata/empty.json")
+	expectedFile, _ := os.ReadFile("testdata/empty.json")
 	require.Equal(t, expectedFile, savedFile)
 
 	require.NoError(t, storeToken("simple.json", &oauth2.Token{
@@ -83,7 +83,7 @@ func TestCryptStore(t *testing.T) {
 		RefreshToken: "supersecret",
 	}))
 	savedFile, _ = afero.ReadFile(fs, "simple.json")
-	expectedFile, _ = ioutil.ReadFile("testdata/simple.json")
+	expectedFile, _ = os.ReadFile("testdata/simple.json")
 	require.Equal(t, expectedFile, savedFile)
 
 	loaded, err := loadToken("empty.json")
@@ -104,7 +104,8 @@ func TestCryptStore(t *testing.T) {
 	_, err = loadToken("empty.json")
 	require.Error(t, err, "with wrong key")
 
-	afero.WriteFile(fs, "not-json.txt", []byte(`not-json`), 0644)
+	err = afero.WriteFile(fs, "not-json.txt", []byte(`not-json`), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	_, err = loadToken("not-json.txt")
 	require.Error(t, err)
 

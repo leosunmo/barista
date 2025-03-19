@@ -144,7 +144,7 @@ func (w *Watcher) tryWatch(restarted bool) error {
 					}
 					break
 				}
-				w.fswatcher.Remove(w.hierarchy[currentLvl])
+				w.fswatcher.Remove(w.hierarchy[currentLvl]) //nolint: errcheck
 				l.Fine("%s: Watch moved from %s -> %s",
 					l.ID(w), w.hierarchy[currentLvl], w.hierarchy[newLvl])
 				currentLvl = newLvl

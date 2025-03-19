@@ -15,7 +15,7 @@
 package githubfs
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 	"time"
@@ -50,13 +50,13 @@ func TestFs(t *testing.T) {
 
 	f, err := fs.Open("/basic/empty")
 	require.NoError(t, err)
-	contents, err := ioutil.ReadAll(f)
+	contents, err := io.ReadAll(f)
 	require.NoError(t, err)
 	require.Equal(t, []byte{}, contents)
 
 	f, err = fs.OpenFile("/basic/foo", os.O_RDONLY, 0600)
 	require.NoError(t, err)
-	contents, err = ioutil.ReadAll(f)
+	contents, err = io.ReadAll(f)
 	require.NoError(t, err)
 	require.Equal(t, "bar", string(contents))
 }

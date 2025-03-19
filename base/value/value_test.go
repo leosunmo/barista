@@ -137,7 +137,7 @@ func TestErrorValue(t *testing.T) {
 	require := require.New(t)
 	var v ErrorValue
 
-	require.NotPanics(func() { v.Get() }, "Without a value/error set")
+	require.NotPanics(func() { _, _ = v.Get() }, "Without a value/error set")
 	val, err := v.Get()
 	require.Nil(val, "Empty state returns nil value")
 	require.NoError(err, "Empty state returns nil error")
@@ -154,7 +154,7 @@ func TestErrorValue(t *testing.T) {
 	require.Error(err)
 
 	v.Set("...")
-	val, err = v.Get()
+	_, err = v.Get()
 	require.NoError(err, "Setting value clears error")
 
 	require.False(v.Error(nil), "Error returns false for nil error")

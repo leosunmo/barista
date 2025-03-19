@@ -182,9 +182,6 @@ func (m *diskInfo) makeChannel() <-chan IO {
 
 var fs = afero.NewOsFs()
 
-// To prevent data races in tests.
-var signalChan chan bool
-
 func update() {
 	lock.Lock()
 	defer lock.Unlock()

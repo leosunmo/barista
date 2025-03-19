@@ -41,7 +41,7 @@ func TestHwmonDetection(t *testing.T) {
 	}
 	for _, content := range contents {
 		err := afero.WriteFile(fs, content.path, []byte(content.data), 0644)
-		require.NoError(t, err)
+		require.NoError(t, err, "afero.WriteFile failed")
 	}
 	// This only tests detection code.
 	// functional tests are in thermalzone_test.go

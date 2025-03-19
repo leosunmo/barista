@@ -87,13 +87,6 @@ func TestReplay(t *testing.T) {
 	require.Equal(t, "foo", txt)
 }
 
-type simpleModule struct{ returned chan bool }
-
-func (s *simpleModule) Stream(sink bar.Sink) {
-	sink.Output(outputs.Text("foo"))
-	s.returned <- true
-}
-
 func TestRestart(t *testing.T) {
 	tm := testModule.New(t)
 	m := NewModule(tm)

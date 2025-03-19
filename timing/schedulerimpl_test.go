@@ -33,7 +33,7 @@ func testSchedulerImplementation(t *testing.T, create func() *Scheduler) {
 
 		select {
 		case <-s.C:
-			if time.Now().Sub(begin) < time.Second {
+			if time.Since(begin) < time.Second {
 				t.Errorf("scheduler triggered too early begin=%v now=%v", begin, time.Now())
 			}
 		case <-time.After(2 * time.Second):
@@ -72,7 +72,7 @@ func testSchedulerImplementation(t *testing.T, create func() *Scheduler) {
 
 		select {
 		case <-s.C:
-			if time.Now().Sub(begin) < time.Second {
+			if time.Since(begin) < time.Second {
 				t.Errorf("scheduler triggered too early begin=%v now=%v", begin, time.Now())
 			}
 		case <-time.After(2 * time.Second):
@@ -110,7 +110,7 @@ func testSchedulerImplementation(t *testing.T, create func() *Scheduler) {
 		for i := 0; i < 2; i++ {
 			select {
 			case <-s.C:
-				if time.Now().Sub(begin) < time.Second*time.Duration(i+1) {
+				if time.Since(begin) < time.Second*time.Duration(i+1) {
 					t.Errorf("scheduler triggered too early (tick %d) begin=%v now=%v", i, begin, time.Now())
 				}
 			case <-time.After(2 * time.Second):

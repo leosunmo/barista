@@ -173,7 +173,7 @@ func TestLockableGrouper(t *testing.T) {
 	require.Equal(t, 3, unlocks)
 
 	out.At(0).Click(bar.Event{})
-	locks, unlocks = g.getCounts()
+	locks, _ = g.getCounts()
 	require.Equal(t, 3, locks, "Does not lock for button click")
 
 	out.At(1).Click(bar.Event{})

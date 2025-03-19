@@ -34,12 +34,14 @@ import (
 
 type meminfo map[string]int
 
-func shouldReturn(info meminfo) {
+func shouldReturn(t *testing.T, info meminfo) {
+	t.Helper()
 	var out bytes.Buffer
 	for key, value := range info {
 		out.WriteString(fmt.Sprintf("%s:\t%d kB\n", key, value))
 	}
-	afero.WriteFile(fs, "/proc/meminfo", out.Bytes(), 0644)
+	err := afero.WriteFile(fs, "/proc/meminfo", out.Bytes(), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 }
 
 func resetForTest() {
@@ -55,7 +57,7 @@ func resetForTest() {
 func TestMeminfo(t *testing.T) {
 	require := require.New(t)
 	fs = afero.NewMemMapFs()
-	shouldReturn(meminfo{
+	shouldReturn(t, meminfo{
 		"MemAvailable": 2048,
 		"MemTotal":     4096,
 		"MemFree":      1024,
@@ -79,7 +81,7 @@ func TestMeminfo(t *testing.T) {
 	testBar.LatestOutput(1, 2).AssertText(
 		[]string{"Mem: 2.0 MiB", "2048", "0.25"}, "on start")
 
-	shouldReturn(meminfo{
+	shouldReturn(t, meminfo{
 		"MemAvailable": 1024,
 		"MemTotal":     4096,
 		"MemFree":      256,
@@ -90,7 +92,7 @@ func TestMeminfo(t *testing.T) {
 	testBar.LatestOutput().AssertText(
 		[]string{"Mem: 1.0 MiB", "1024", "0.0625"}, "on tick")
 
-	shouldReturn(meminfo{
+	shouldReturn(t, meminfo{
 		"Cached":   1024,
 		"Buffers":  512,
 		"MemTotal": 4096,
@@ -146,7 +148,7 @@ func TestErrors(t *testing.T) {
 	})
 	testBar.LatestOutput().Expect("template")
 
-	afero.WriteFile(fs, "/proc/meminfo", []byte(`
+	err := afero.WriteFile(fs, "/proc/meminfo", []byte(`
 	-- Lines in weird formats --
 	Empty:
 
@@ -157,6 +159,7 @@ func TestErrors(t *testing.T) {
 	Fields are non-numeric:
 	MemTotal: ABCD kB
 	`), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	testBar.Tick()
 	out := testBar.LatestOutput()
 	out.At(1).AssertError("non-numeric value")
@@ -164,11 +167,12 @@ func TestErrors(t *testing.T) {
 	// MemAvailable is parsed, but total is 0.
 	out.At(0).AssertText("+Inf")
 
-	afero.WriteFile(fs, "/proc/meminfo", []byte(`
+	err = afero.WriteFile(fs, "/proc/meminfo", []byte(`
 	MemAvailable: 1024 kB
 	MemFree: 1024 kB
 	MemTotal: 2048 kB
 	`), 0644)
+	require.NoError(t, err, "afero.WriteFile failed")
 	testBar.Tick()
 	testBar.LatestOutput().AssertText(
 		[]string{"0.5", "1.0 MiB", "2.1 MB"},

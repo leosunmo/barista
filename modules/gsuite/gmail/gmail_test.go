@@ -134,7 +134,7 @@ func TestMain(m *testing.M) {
 		}
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(lbls)
+		_ = json.NewEncoder(w).Encode(lbls)
 	})
 	mux.HandleFunc("/gmail/v1/users/me/labels/", func(w http.ResponseWriter, r *http.Request) {
 		labelsMu.Lock()
@@ -148,7 +148,7 @@ func TestMain(m *testing.M) {
 		}
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(label)
+		_ = json.NewEncoder(w).Encode(label)
 	})
 	server := httptest.NewServer(mux)
 	defer server.Close()
