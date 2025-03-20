@@ -134,7 +134,10 @@ type AutoModule struct {
 
 // Auto constructs an instance of the media module that shows the most recently
 // connected player (based on D-Bus name acquisition). It can optionally ignore
-// one or more named players from this detection.
+// one or more named players from this detection. The excluded players can be
+// specified by name or by prefix with wildcard '*'.
+// For example, Auto("player1", "chromium.*") will exclude "player1" and any
+// player whose name starts with "chromium.".
 func Auto(excluding ...string) *AutoModule {
 	excluded := map[string]bool{}
 	for _, e := range excluding {
@@ -243,6 +246,10 @@ func (m *AutoModule) Stream(s bar.Sink) {
 	defer w.Unsubscribe()
 	ownerStack := []string{}
 	for k := range w.GetOwners() {
+		// Check if this player is on the exclude list.
+		if isExcluded(m.excluded, strings.TrimPrefix(k, "org.mpris.MediaPlayer2.")) {
+			continue
+		}
 		if len(ownerStack) == 0 {
 			l.Fine("%s, starting with %s", l.ID(m), k)
 			m.playerName(k)
@@ -259,7 +266,8 @@ func (m *AutoModule) playerName(dbusName string) {
 
 func (m *AutoModule) listenForPlayerUpdates(updates <-chan dbus.NameOwnerChange, ownerStack []string) {
 	for u := range updates {
-		if m.excluded[strings.TrimPrefix(u.Name, "org.mpris.MediaPlayer2.")] {
+		// Check if this player is on the exclude list.
+		if isExcluded(m.excluded, strings.TrimPrefix(u.Name, "org.mpris.MediaPlayer2.")) {
 			continue
 		}
 		if u.Owner != "" {
@@ -285,4 +293,18 @@ func (m *AutoModule) listenForPlayerUpdates(updates <-chan dbus.NameOwnerChange,
 			}
 		}
 	}
+}
+
+func isExcluded(excluded map[string]bool, playerName string) bool {
+	if excluded[playerName] {
+		return true
+	}
+	// Resolve any wildcards in the excluded list.
+	for k := range excluded {
+		if strings.HasSuffix(k, "*") && strings.HasPrefix(playerName, strings.TrimSuffix(k, "*")) {
+			l.Fine("Player %q in exclude list, ignoring", playerName)
+			return true
+		}
+	}
+	return false
 }
