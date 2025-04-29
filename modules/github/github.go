@@ -50,8 +50,9 @@ func (n Notifications) Total() int {
 
 // Module represents a GitHub barista module that displays notification counts.
 type Module struct {
-	config     *oauth.Config
-	outputFunc value.Value // of func(Notifications) bar.Output
+	personalAccessToken string
+	config              *oauth.Config
+	outputFunc          value.Value // of func(Notifications) bar.Output
 
 	// Use the poll interval and last modified from the previous response to
 	// control when we next check for notifications.
@@ -60,6 +61,7 @@ type Module struct {
 }
 
 // New creates a GitHub module using the given clientID and secret.
+// If clientSecret is empty, a device flow will be used instead of the web flow.
 func New(clientID, clientSecret string) *Module {
 	config := oauth.Register(&oauth2.Config{
 		Endpoint:     github.Endpoint,
@@ -80,6 +82,21 @@ func New(clientID, clientSecret string) *Module {
 	return m
 }
 
+// NewWithToken creates a GitHub module using the given personal access token.
+func NewWithToken(token string) *Module {
+	m := &Module{
+		personalAccessToken: token,
+		scheduler:           timing.NewScheduler(),
+	}
+	m.Output(func(n Notifications) bar.Output {
+		if n.Total() == 0 {
+			return nil
+		}
+		return outputs.Textf("GH: %d", n.Total())
+	})
+	return m
+}
+
 type ghNotification struct {
 	Reason string
 	Unread bool
@@ -90,7 +107,17 @@ var wrapForTest func(*http.Client)
 
 // Stream starts the module.
 func (m *Module) Stream(sink bar.Sink) {
-	client, _ := m.config.Client()
+	var client *http.Client
+	if m.personalAccessToken != "" {
+		client = http.DefaultClient
+		client.Transport = &oauth2.Transport{
+			Source: oauth2.StaticTokenSource(&oauth2.Token{AccessToken: m.personalAccessToken}),
+			Base:   http.DefaultTransport,
+		}
+	} else {
+		client, _ = m.config.Client()
+	}
+
 	if wrapForTest != nil {
 		wrapForTest(client)
 	}
