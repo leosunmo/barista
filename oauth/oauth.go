@@ -40,7 +40,10 @@ import (
 // It can be used to create an authenticated client after the user has setup
 // oauth for barista using the InteractiveSetup() method.
 type Config struct {
-	config   *oauth2.Config
+	config *oauth2.Config
+	// Whether to use the device flow for authentication.
+	device bool
+	// The filename to store the token in.
 	filename string
 	// For more context during interactive auth
 	domain  string
@@ -80,9 +83,19 @@ func Register(config *oauth2.Config) *Config {
 	if atomic.LoadInt32(&setupHasBeenCalled) != 0 {
 		panic("Cannot register after setup has been called!")
 	}
-	providerU, _ := url.Parse(config.Endpoint.AuthURL)
+	deviceAuth := false
+	var providerU *url.URL
+	// If the client secret is empty, we assume this is a device auth flow.
+	if config.ClientSecret == "" {
+		deviceAuth = true
+		providerU, _ = url.Parse(config.Endpoint.DeviceAuthURL)
+	} else {
+		// If the client secret is not empty, we assume this is a web auth flow.
+		providerU, _ = url.Parse(config.Endpoint.AuthURL)
+	}
 	c := &Config{
 		config: config,
+		device: deviceAuth,
 		domain: providerU.Hostname(),
 	}
 	caller := "<unknown>"
@@ -200,11 +213,23 @@ func (c *Config) prompt(index, total int, force bool) bool {
 		fmt.Fprintf(stdout, "! Automatic refresh failed\n")
 	}
 
-	authURL := c.config.AuthCodeURL("no-state", oauth2.AccessTypeOffline)
-	fmt.Fprintf(stdout, "- Visit %v and enter the code here:\n> ", authURL)
-	var authCode string
-	if _, err = fmt.Fscan(stdin, &authCode); err == nil {
-		c.token, err = c.config.Exchange(context.Background(), authCode)
+	// If it's a device auth, we need to use the device flow.
+	if c.device {
+		var deviceAuth *oauth2.DeviceAuthResponse
+		deviceAuth, err = c.config.DeviceAuth(context.Background())
+		if err != nil {
+			fmt.Fprintf(stdout, "! Failed to get device auth: %v\n", err)
+			return false
+		}
+		fmt.Fprintf(os.Stderr, "- Visit %s and enter code %q:\n>", deviceAuth.VerificationURI, deviceAuth.UserCode)
+		c.token, err = c.config.DeviceAccessToken(context.Background(), deviceAuth)
+	} else {
+		authURL := c.config.AuthCodeURL("no-state", oauth2.AccessTypeOffline)
+		fmt.Fprintf(stdout, "- Visit %v and enter the code here:\n> ", authURL)
+		var authCode string
+		if _, err = fmt.Fscan(stdin, &authCode); err == nil {
+			c.token, err = c.config.Exchange(context.Background(), authCode)
+		}
 	}
 	if err == nil {
 		err = storeToken(c.filename, c.token)
